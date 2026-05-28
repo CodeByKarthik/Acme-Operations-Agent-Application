@@ -9,6 +9,10 @@ from ...db.base import Base
 
 
 class AppRole(Base):
+    """
+    Represents a Role in the system, which can be assigned 
+    to users for access control.
+    """
     __tablename__ = "app_roles"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -41,6 +45,10 @@ class AppRole(Base):
 
 
 class AppUser(Base):
+    """
+    Represents a User in the system, which can be 
+    authenticated and assigned roles for access control.
+    """
     __tablename__ = "app_users"
 
     id: Mapped[uuid.UUID] = mapped_column(

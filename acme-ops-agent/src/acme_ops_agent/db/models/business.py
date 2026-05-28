@@ -30,6 +30,9 @@ from acme_ops_agent.common.enums import (
 
 
 class Customer(Base):
+    """
+    Represents a Customer Model in the system. 
+    """
     __tablename__ = "customers"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -88,6 +91,9 @@ class Customer(Base):
 
 
 class Issue(Base):
+    """
+    Represents an Issue Model in the system.
+    """
     __tablename__ = "issues"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -161,6 +167,9 @@ class Issue(Base):
 
 
 class IssueUpdate(Base):
+    """
+    Represents an Issue Update Model in the system.
+    """
     __tablename__ = "issue_updates"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -196,6 +205,9 @@ class IssueUpdate(Base):
 
 
 class NextAction(Base):
+    """
+    Represents a Next Action Model in the system.
+    """
     __tablename__ = "next_actions"
 
     id: Mapped[uuid.UUID] = mapped_column(
