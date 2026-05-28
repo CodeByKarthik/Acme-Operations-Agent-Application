@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     keycloak_issuer: str = Field(validation_alias="KEYCLOAK_ISSUER")
     keycloak_client_id: str = Field(validation_alias="KEYCLOAK_CLIENT_ID")
     keycloak_client_secret: str = Field(validation_alias="KEYCLOAK_CLIENT_SECRET")
+    keycloak_jwt_algorithm: str = Field(validation_alias="KEYCLOAK_JWT_ALGORITHM")
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
