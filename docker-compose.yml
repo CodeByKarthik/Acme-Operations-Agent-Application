@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_acme_ops
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - acme_ops_pgdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db-init:
+    build:
+      context: ./acme-ops-agent
+    container_name: acme_ops_db_init
+    environment:
+      DATABASE_URL: ${DATABASE_URL_DOCKER}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER_DOCKER}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["./scripts/db_entrypoint.sh"]
+    restart: "no"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak_acme_ops
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+
+      KC_DB: ${KEYCLOAK_DB_VENDOR}
+      KC_DB_URL_HOST: ${KEYCLOAK_DB_HOST}
+      KC_DB_URL_PORT: ${KEYCLOAK_DB_PORT}
+      KC_DB_URL_DATABASE: ${KEYCLOAK_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+
+      KC_HEALTH_ENABLED: ${KEYCLOAK_HEALTH_ENABLED}
+      KC_METRICS_ENABLED: ${KEYCLOAK_METRICS_ENABLED}
+    ports:
+      - "${KEYCLOAK_PORT}:8080"
+    volumes:
+      - ./keycloak-realm:/opt/keycloak/data/import
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  acme_ops_pgdata:
