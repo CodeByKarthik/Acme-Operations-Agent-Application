@@ -1,0 +1,19 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/acme-ops-agent/.venv/bin/python",
+  "python.analysis.extraPaths": [
+      "${workspaceFolder}/acme-ops-agent/src"
+  ],
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "Acme Ops DB",
+      "database": "acme_ops",
+      "username": "acme",
+      "password": "acme"
+    }
+  ]
+}
