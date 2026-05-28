@@ -219,3 +219,4 @@ __marimo__/
 
 Acme Ops DB.session.sql
 .env
+/acme-ops-agent/scripts/verify_auth_context.py
