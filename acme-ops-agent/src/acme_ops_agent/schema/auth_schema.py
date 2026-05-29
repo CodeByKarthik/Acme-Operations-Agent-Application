@@ -19,7 +19,7 @@ class KeycloakTokenPayload(BaseModel):
     azp: str
     preferred_username: str
 
-    sub: str | None = None
+    sub: str | None = None 
     email: str | None = None
     name: str | None = None
     given_name: str | None = None
@@ -58,6 +58,7 @@ class AppUserDTO(BaseModel):
     full_name: str | None = None
     role: str
     is_active: bool
+    keycloak_user_id: str | None = None
 
 
 class AuthContext(BaseModel):

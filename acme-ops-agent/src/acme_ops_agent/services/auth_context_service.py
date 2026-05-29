@@ -73,6 +73,18 @@ class AuthContextService:
             app_role=app_user.role,
         )
 
+        if app_user.keycloak_user_id is None:
+            if token_user.keycloak_user_id is None:
+                raise AuthError("Token missing Keycloak user ID (sub claim)")
+            self.user_repository.set_keycloak_user_id(
+                app_user_id=app_user.id,
+                keycloak_user_id=token_user.keycloak_user_id,
+            )
+            app_user.keycloak_user_id = token_user.keycloak_user_id
+
+        elif app_user.keycloak_user_id != token_user.keycloak_user_id:
+            raise AuthError("Authenticated token does not match the registered Keycloak user")
+
         try:
             app_role = AppRole(app_user.role)
         except ValueError as exc:
