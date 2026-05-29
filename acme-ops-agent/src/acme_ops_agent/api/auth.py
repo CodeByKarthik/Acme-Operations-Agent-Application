@@ -4,7 +4,7 @@ from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from acme_ops_agent.auth.keycloak import KeycloakTokenVerifier
-from acme_ops_agent.common.exceptions import AuthError
+from acme_ops_agent.common.exceptions import AuthError, PermissionDenied
 from acme_ops_agent.db.repositories.user_repository import AppUserRepository
 from acme_ops_agent.db.session import SessionLocal
 from acme_ops_agent.schema.auth_schema import AuthContext
@@ -51,9 +51,6 @@ def get_auth_context(
     authorization: str | None = Header(default=None),
     session: Session = Depends(get_db_session),
 ) -> AuthContext:
-    """
-    Validate the request bearer token and return the authenticated app user context.
-    """
     token = extract_bearer_token(authorization)
 
     auth_service = AuthContextService(
@@ -66,5 +63,10 @@ def get_auth_context(
     except AuthError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        ) from exc
+    except PermissionDenied as exc:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
             detail=str(exc),
         ) from exc

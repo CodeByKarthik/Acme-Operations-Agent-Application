@@ -46,12 +46,12 @@ class KeycloakTokenVerifier:
 
     def _decode(self, token: str) -> dict[str, Any]:
         """
-        Decode and verify the JWT signature, expiry, and issuer.
+        Decode and verify JWT signature, expiry, issuer, and client binding.
         """
         try:
             signing_key = self._jwks_client.get_signing_key_from_jwt(token)
 
-            return jwt.decode(
+            payload: dict[str, Any] = jwt.decode(
                 token,
                 signing_key.key,
                 algorithms=[settings.keycloak_jwt_algorithm],
@@ -59,6 +59,11 @@ class KeycloakTokenVerifier:
                 options={"verify_aud": False},
             )
 
+            self._validate_client(payload)
+            return payload
+
+        except jwt.ExpiredSignatureError as exc:
+            raise AuthError("Access token has expired") from exc
         except jwt.PyJWTError as exc:
             raise AuthError("Invalid access token") from exc
 
@@ -89,3 +94,23 @@ class KeycloakTokenVerifier:
             email=payload.email,
             roles=set(payload.realm_access.roles),
         )
+    
+    def _validate_client(self, payload: dict[str, Any]) -> None:
+        """
+        Ensure the token was issued for this application client.
+
+        Keycloak access tokens often use the `azp` claim to identify the
+        authorized party. Some configurations also include the client ID in `aud`.
+        """
+        authorized_party = payload.get("azp")
+        audience = payload.get("aud")
+
+        audience_matches = False
+
+        if isinstance(audience, str):
+            audience_matches = audience == self.client_id
+        elif isinstance(audience, list):
+            audience_matches = self.client_id in audience
+
+        if authorized_party != self.client_id and not audience_matches:
+            raise AuthError("Access token was not issued for this client")

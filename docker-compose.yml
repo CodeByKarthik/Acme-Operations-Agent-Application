@@ -61,5 +61,26 @@ services:
       postgres:
         condition: service_healthy
 
+  streamlit:
+    build: ./streamlit-app
+    container_name: acme_ops_streamlit
+    ports:
+      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
+    environment:
+      KEYCLOAK_URL: ${KEYCLOAK_URL_DOCKER}
+      KEYCLOAK_URL_DOCKER: ${KEYCLOAK_URL_DOCKER}
+      API_DOCKER_URL: ${API_DOCKER_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      REDIRECT_URI: ${REDIRECT_URI}
+      API_BASE_URL: ${API_DOCKER_URL}
+      STREAMLIT_HOST: ${STREAMLIT_HOST}
+      STREAMLIT_PORT: ${STREAMLIT_PORT}    # internal (container‑to‑container)
+      KEYCLOAK_EXTERNAL_URL: ${KEYCLOAK_EXTERNAL_URL}
+    depends_on:
+      keycloak:
+        condition: service_started
+
 volumes:
   acme_ops_pgdata:
