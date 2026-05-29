@@ -2,9 +2,8 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
-
-from acme_ops_agent.db.models.business import (
+from pydantic import BaseModel, Field, field_validator
+from acme_ops_agent.common.enums import (
     CustomerHealthEnum,
     CustomerTierEnum,
     IssuePriorityEnum,
@@ -38,7 +37,7 @@ class CustomerRead(BaseModel):
     industry: str | None
     tier: CustomerTierEnum
     account_owner_user_id: UUID | None
-    contract_value: Decimal | None
+    contract_value: str | None
     health_status: CustomerHealthEnum
     notes: str | None
     deleted_at: datetime | None
@@ -46,6 +45,17 @@ class CustomerRead(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+    @field_validator("contract_value", mode="before")
+    @classmethod
+    def convert_contract_value(cls, value: Decimal | str | None) -> str | None:
+        """
+        Serialize Decimal contract values as strings.
+        """
+        if value is None:
+            return None
+
+        return str(value)
 
 
 class IssueCreate(BaseModel):
