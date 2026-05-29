@@ -2,6 +2,7 @@ from acme_ops_agent.common.exceptions import AuthError, PermissionDenied, AppUse
 from acme_ops_agent.auth.keycloak import KeycloakTokenVerifier
 from acme_ops_agent.db.repositories.user_repository import AppUserRepository
 from acme_ops_agent.schema.auth_schema import AuthContext
+from acme_ops_agent.common.enums import AppRole
 
 
 class AuthContextService:
@@ -28,8 +29,6 @@ class AuthContextService:
             tokens and extracts user data.
         - user_repository: Repository for accessing application users.
         """
-        self.token_verifier = token_verifier
-        self.user_repository = user_repository
         self.token_verifier = token_verifier
         self.user_repository = user_repository
 
@@ -74,10 +73,15 @@ class AuthContextService:
             app_role=app_user.role,
         )
 
+        try:
+            app_role = AppRole(app_user.role)
+        except ValueError as exc:
+            raise AuthError("Registered application user has an invalid role") from exc
+
         return AuthContext(
             app_user_id=app_user.id,
             username=app_user.username,
-            role=app_user.role,
+            role=app_role,
             keycloak_user_id=token_user.keycloak_user_id,
         )
 

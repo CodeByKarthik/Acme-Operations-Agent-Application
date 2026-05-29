@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from acme_ops_agent.common.enums import AppRole
 
 
 class RealmAccess(BaseModel):
@@ -66,6 +67,6 @@ class AuthContext(BaseModel):
     """
     app_user_id: str
     username: str
-    role: str
+    role: AppRole
 
     keycloak_user_id: str | None = None
