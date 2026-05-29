@@ -44,6 +44,21 @@
         "profile",
         "roles",
         "email"
+      ],
+      "protocolMappers": [
+        {
+          "name": "user-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-subject-mapper",
+          "consentRequired": false,
+          "config": {
+            "access.token.claim": "true",
+            "claim.name": "sub",
+            "id.token.claim": "true",
+            "jsonType.label": "String",
+            "userinfo.token.claim": "true"
+          }
+        }
       ]
     }
   ],
