@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     keycloak_client_id: str = Field(validation_alias="KEYCLOAK_CLIENT_ID")
     keycloak_client_secret: str = Field(validation_alias="KEYCLOAK_CLIENT_SECRET")
     keycloak_jwt_algorithm: str = Field(validation_alias="KEYCLOAK_JWT_ALGORITHM")
+    mcp_host: str = Field(validation_alias="MCP_HOST")
+    mcp_port: int = Field(validation_alias="MCP_PORT")
+
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
