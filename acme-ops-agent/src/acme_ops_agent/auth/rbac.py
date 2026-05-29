@@ -21,12 +21,10 @@ ADMIN_ROLES = {
 
 def require_role(context: AuthContext, allowed_roles: set[AppRole]) -> None:
     """
-    Enforce that the authenticated user has one 
+    Enforce that the authenticated user has one
     of the allowed roles.
     """
-    allowed = {role.value for role in allowed_roles}
-
-    if context.role not in allowed:
+    if context.role not in allowed_roles:
         raise PermissionDenied("User does not have the required role")
 
 
@@ -34,18 +32,18 @@ def can_read(context: AuthContext) -> bool:
     """
     Check if the user has read permission.
     """
-    return context.role in {role.value for role in READ_ROLES}
+    return context.role in READ_ROLES
 
 
 def can_write(context: AuthContext) -> bool:
     """
     Check if the user has write/modify permission.
     """
-    return context.role in {role.value for role in WRITE_ROLES}
+    return context.role in WRITE_ROLES
 
 
 def is_admin(context: AuthContext) -> bool:
     """
     Check if the user has admin privileges.
     """
-    return context.role == AppRole.ADMIN.value
+    return context.role == AppRole.ADMIN
