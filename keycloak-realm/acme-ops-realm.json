@@ -37,14 +37,16 @@
       ],
       "webOrigins": [
         "http://localhost:8000",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "http://localhost:8501"
       ],
       "defaultClientScopes": [
         "web-origins",
         "acr",
         "profile",
         "roles",
-        "email"
+        "email",
+        "basic"
       ],
       "protocolMappers": [
         {
