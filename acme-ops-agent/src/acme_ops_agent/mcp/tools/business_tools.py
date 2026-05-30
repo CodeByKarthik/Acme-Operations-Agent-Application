@@ -60,6 +60,21 @@ async def list_open_issues(
     return [IssueRead.model_validate(issue) for issue in issues]
 
 
+async def get_issue_by_external_ref(
+    external_ref: Annotated[str, Field(min_length=1, max_length=50)],
+    service: BusinessService = Depends(get_business_service),
+) -> IssueRead | None:
+    """Find an issue by external reference such as ISSUE-101."""
+    issue = service.get_issue_by_external_ref(
+        external_ref=external_ref,
+    )
+
+    if issue is None:
+        return None
+
+    return IssueRead.model_validate(issue)
+
+
 async def list_issue_updates(
     issue_id: UUID,
     customer_visible_only: bool = False,
