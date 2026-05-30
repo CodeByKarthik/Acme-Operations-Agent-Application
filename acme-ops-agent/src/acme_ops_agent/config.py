@@ -24,7 +24,11 @@ class Settings(BaseSettings):
     api_port: int = Field(validation_alias="API_PORT")
     openai_api_key: str = Field(default="", validation_alias="OPENAI_API_KEY")
     llm_model: str = Field(default="gpt-4o-mini", validation_alias="LLM_MODEL")
-
+    langsmith_tracing: str = Field(validation_alias="LANGSMITH_TRACING")
+    langsmith_api_key: str = Field(validation_alias="LANGSMITH_API_KEY")
+    langsmith_endpoint: str = Field(validation_alias="LANGSMITH_ENDPOINT")
+    langsmith_project: str = Field(validation_alias="LANGSMITH_PROJECT")
+    app_version: str = Field(validation_alias="APP_VERSION")
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
