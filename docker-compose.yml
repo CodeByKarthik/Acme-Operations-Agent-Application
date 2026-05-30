@@ -6,6 +6,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      KEYCLOAK_ISSUER_DOCKER: ${KEYCLOAK_ISSUER_DOCKER}
       KEYCLOAK_JWKS_URL: ${KEYCLOAK_JWKS_URL}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
@@ -14,14 +15,18 @@ services:
       MCP_PORT: ${MCP_PORT}
       API_HOST: ${API_HOST}
       API_PORT: ${API_PORT}
-    expose:
-      - "${API_PORT}"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_MODEL: ${LLM_MODEL}
+    ports:
+      - "${API_PORT}:${API_PORT}"
     depends_on:
       postgres:
         condition: service_healthy
       db-init:
         condition: service_completed_successfully
       keycloak:
+        condition: service_started
+      mcp:
         condition: service_started
       
 
@@ -54,6 +59,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      KEYCLOAK_ISSUER_DOCKER: ${KEYCLOAK_ISSUER_DOCKER}
       KEYCLOAK_JWKS_URL: ${KEYCLOAK_JWKS_URL}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
@@ -62,6 +68,8 @@ services:
       MCP_PORT: ${MCP_PORT}
       API_HOST: ${API_HOST}
       API_PORT: ${API_PORT}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_MODEL: ${LLM_MODEL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -113,6 +121,33 @@ services:
     depends_on:
       backend:
         condition: service_started
+      keycloak:
+        condition: service_started
+
+  mcp:
+    build:
+      context: ./acme-ops-agent
+    container_name: mcp_acme_ops
+    command: ["python", "-m", "acme_ops_agent.mcp.server"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL_DOCKER}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
+      KEYCLOAK_ISSUER_DOCKER: ${KEYCLOAK_ISSUER_DOCKER}
+      KEYCLOAK_JWKS_URL: ${KEYCLOAK_JWKS_URL}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      KEYCLOAK_JWT_ALGORITHM: ${KEYCLOAK_JWT_ALGORITHM}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_MODEL: ${LLM_MODEL}
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: ${MCP_PORT}
+      API_HOST: ${API_HOST}
+      API_PORT: ${API_PORT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
       keycloak:
         condition: service_started
 

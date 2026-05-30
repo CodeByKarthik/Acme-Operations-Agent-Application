@@ -76,6 +76,20 @@ class BusinessService:
             offset=offset,
         )
 
+    def get_issue_by_external_ref(
+        self,
+        *,
+        external_ref: str,
+    ) -> Issue | None:
+        """
+        Return an issue by its external reference.
+        """
+        require_role(self.auth_context, READ_ROLES)
+
+        return self.read_repository.get_issue_by_external_ref(
+            external_ref=external_ref,
+        )
+
     def list_issue_updates(
         self,
         *,

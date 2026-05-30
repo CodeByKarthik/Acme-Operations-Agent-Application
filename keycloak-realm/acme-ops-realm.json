@@ -1,6 +1,7 @@
 {
   "realm": "acme",
   "enabled": true,
+  "sslRequired": "none",
   "displayName": "Acme Operations",
   "roles": {
     "realm": [

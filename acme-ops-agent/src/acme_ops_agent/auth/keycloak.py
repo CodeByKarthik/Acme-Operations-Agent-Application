@@ -19,7 +19,9 @@ class KeycloakTokenVerifier:
         Initialize the token verifier using settings from 
         environment variables.
         """
-        self.issuer = settings.keycloak_issuer
+        self.issuers = [settings.keycloak_issuer]
+        if settings.keycloak_issuer_docker:
+            self.issuers.append(settings.keycloak_issuer_docker)
         self.client_id = settings.keycloak_client_id
         self.jwks_url = settings.keycloak_jwks_url
         self._jwks_client = PyJWKClient(self.jwks_url)
@@ -51,13 +53,22 @@ class KeycloakTokenVerifier:
         try:
             signing_key = self._jwks_client.get_signing_key_from_jwt(token)
 
-            payload: dict[str, Any] = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=[settings.keycloak_jwt_algorithm],
-                issuer=self.issuer,
-                options={"verify_aud": False},
-            )
+            payload: dict[str, Any] | None = None
+            for issuer in dict.fromkeys(self.issuers):
+                try:
+                    payload = jwt.decode(
+                        token,
+                        signing_key.key,
+                        algorithms=[settings.keycloak_jwt_algorithm],
+                        issuer=issuer,
+                        options={"verify_aud": False},
+                    )
+                    break
+                except jwt.InvalidIssuerError:
+                    continue
+
+            if payload is None:
+                raise AuthError("Invalid access token")
 
             self._validate_client(payload)
             return payload

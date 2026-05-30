@@ -81,6 +81,22 @@ class BusinessReadRepository:
 
         return list(self.session.scalars(stmt).all())
 
+    def get_issue_by_external_ref(
+        self,
+        *,
+        external_ref: str,
+    ) -> Issue | None:
+        """
+        Return an issue by its external reference.
+        """
+        stmt = (
+            select(Issue)
+            .where(Issue.external_ref == external_ref)
+            .where(Issue.deleted_at.is_(None))
+        )
+
+        return self.session.scalar(stmt)
+
     def list_issue_updates(
         self,
         *,
