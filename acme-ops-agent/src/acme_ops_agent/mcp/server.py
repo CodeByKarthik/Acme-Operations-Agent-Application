@@ -1,5 +1,4 @@
 from fastmcp import FastMCP
-from acme_ops_agent.config import settings
 
 from .tools.tool_registry import register_all_tools
 
@@ -34,8 +33,8 @@ def main() -> None:
     """
     mcp.run(
         transport="streamable-http",
-        host=settings.mcp_host,
-        port=settings.mcp_port,
+        host="0.0.0.0",  # nosec B104
+        port=9001,
     )
 
 
