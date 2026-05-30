@@ -7,15 +7,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = PROJECT_ROOT / ".env"
 
-
 class Settings(BaseSettings):
     database_url: str = Field(validation_alias="DATABASE_URL")
     keycloak_issuer: str = Field(validation_alias="KEYCLOAK_ISSUER")
     keycloak_client_id: str = Field(validation_alias="KEYCLOAK_CLIENT_ID")
     keycloak_client_secret: str = Field(validation_alias="KEYCLOAK_CLIENT_SECRET")
     keycloak_jwt_algorithm: str = Field(validation_alias="KEYCLOAK_JWT_ALGORITHM")
+    keycloak_jwks_url: str = Field(validation_alias="KEYCLOAK_JWKS_URL")
     mcp_host: str = Field(validation_alias="MCP_HOST")
     mcp_port: int = Field(validation_alias="MCP_PORT")
+    api_host: str = Field(validation_alias="API_HOST")
+    api_port: int = Field(validation_alias="API_PORT")
 
 
     model_config = SettingsConfigDict(

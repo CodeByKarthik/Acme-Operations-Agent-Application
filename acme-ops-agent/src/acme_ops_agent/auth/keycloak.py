@@ -21,7 +21,7 @@ class KeycloakTokenVerifier:
         """
         self.issuer = settings.keycloak_issuer
         self.client_id = settings.keycloak_client_id
-        self.jwks_url = f"{self.issuer}/protocol/openid-connect/certs"
+        self.jwks_url = settings.keycloak_jwks_url
         self._jwks_client = PyJWKClient(self.jwks_url)
 
     def verify(self, token: str) -> AuthenticatedUser:
