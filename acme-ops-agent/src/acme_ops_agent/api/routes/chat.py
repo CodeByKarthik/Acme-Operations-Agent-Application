@@ -24,11 +24,19 @@ async def chat(
 
     The bearer token is forwarded to the MCP server so that
     tool calls respect the user's RBAC permissions.
+
+    The auth context is passed to the agent for LangSmith
+    trace metadata (username, role, user_id).
     """
     token = extract_bearer_token(authorization)
     conversation_id = request.conversation_id or uuid4()
 
-    answer = await _agent_service.run(request.message, token)
+    answer = await _agent_service.run(
+        message=request.message,
+        token=token,
+        auth_context=auth_context,
+        conversation_id=str(conversation_id),
+    )
 
     return ChatResponse(
         conversation_id=conversation_id,
