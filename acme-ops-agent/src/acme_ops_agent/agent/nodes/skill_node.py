@@ -30,8 +30,8 @@ def create_escalation_summary_node(
         last_message = state["messages"][-1]
         user_text = (
             last_message.content
-            if isinstance(last_message.content, str)
-            else str(last_message.content)
+            if isinstance(last_message.content, str)  # type: ignore
+            else str(last_message.content)  # type: ignore
         )
 
         summary = await skill.execute(user_text)

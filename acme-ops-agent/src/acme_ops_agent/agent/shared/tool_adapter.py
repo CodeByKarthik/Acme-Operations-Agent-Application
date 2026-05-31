@@ -77,7 +77,9 @@ def _build_field_description(prop: dict[str, Any]) -> str:
 
 
 def _is_nullable(prop: dict[str, Any]) -> bool:
-    """Return True if the property accepts null."""
+    """
+    Return True if the property accepts null.
+    """
     if "anyOf" in prop:
         return any(s.get("type") == "null" for s in prop["anyOf"])
     json_type = prop.get("type")
