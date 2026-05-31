@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
@@ -6,9 +8,9 @@ from acme_ops_agent.config import settings
 from acme_ops_agent.schema.auth_schema import AuthContext
 from acme_ops_agent.utils.logger import get_logger
 
-from .graph import build_graph
+from .graph_builder import build_graph
 from .mcp_client import connect_mcp
-from .tool_adapter import create_mcp_tools
+from .shared.tool_adapter import create_mcp_tools
 
 logger = get_logger(__name__)
 
@@ -57,7 +59,7 @@ class AgentService:
         """
         Build the RunnableConfig passed to graph.ainvoke().
 
-        This single config dict serves three purposes:
+        Serves three purposes:
         - configurable: runtime values nodes need (auth context)
         - metadata: attached to the LangSmith trace root
         - tags: filterable labels in LangSmith
