@@ -11,6 +11,7 @@ from langchain_core.messages import (
     ToolMessage,
 )
 from langchain_openai import ChatOpenAI
+from langsmith import tracing_context  # type: ignore[attr-defined]
 
 from acme_ops_agent.agent.shared.parsing import content_to_text
 from acme_ops_agent.utils.logger import get_logger
@@ -136,7 +137,9 @@ async def _run_llm_judge(
         assistant_answer=assistant_answer,
     )
 
-    response = await llm.ainvoke([SystemMessage(content=prompt)])
+    # tracing_context(enabled=False) suppresses the global LangSmith tracer
+    with tracing_context(enabled=False):
+        response = await llm.ainvoke([SystemMessage(content=prompt)])
     response_text = content_to_text(response.content)  # type: ignore[arg-type]
 
     return _parse_llm_scores(response_text)
@@ -263,15 +266,5 @@ async def score_response(
     # --- Deterministic checks ---
     scores.tool_selection = _check_tool_selection(tools_called, expected_tools)
     scores.rbac_compliance = 1 if _check_rbac_compliance(messages, user_role) else 0
-
-    logger.info(
-        "Evaluation complete | groundedness=%d | relevance=%d | "
-        "hallucination=%d | tool_selection=%d | rbac=%d",
-        scores.groundedness,
-        scores.relevance,
-        scores.hallucination,
-        scores.tool_selection,
-        scores.rbac_compliance,
-    )
 
     return scores

@@ -62,12 +62,12 @@ def log_evaluation_to_langsmith(
 
     logger.info(
         "Logged evaluation feedback to LangSmith | run_id=%s | "
-        "groundedness=%d | relevance=%d | hallucination=%d | "
-        "tool_selection=%d | rbac=%d",
+        "groundedness=%.2f | relevance=%.2f | hallucination=%.2f | "
+        "tool_selection=%.2f | rbac=%.2f",
         run_id,
-        scores.groundedness,
-        scores.relevance,
-        scores.hallucination,
-        scores.tool_selection,
-        scores.rbac_compliance,
+        scores.groundedness / 5.0,
+        scores.relevance / 5.0,
+        scores.hallucination / 5.0,
+        float(scores.tool_selection),
+        float(scores.rbac_compliance),
     )
