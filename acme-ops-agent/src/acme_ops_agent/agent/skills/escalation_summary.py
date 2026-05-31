@@ -74,7 +74,12 @@ class EscalationSummarySkill:
         if customer_raw is None:
             return "The escalation summary could not be completed — MCP call limit reached."
 
-        if customer_raw.startswith("Error:") or customer_raw in ("null", "None", ""):
+        if customer_raw.startswith("Error:") or customer_raw in (
+            "null",
+            "None",
+            "",
+            "No output returned",
+        ):
             return f"Customer '{customer_name}' was not found in the system."
 
         customer = safe_json_parse(customer_raw)
