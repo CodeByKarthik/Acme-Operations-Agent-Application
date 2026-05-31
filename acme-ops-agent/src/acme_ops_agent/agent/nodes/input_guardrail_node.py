@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 import re
-from typing import Any, cast
+from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
 
 from acme_ops_agent.agent.prompts.guardrails import INPUT_GUARDRAIL_PROMPT
+from acme_ops_agent.agent.shared.parsing import content_to_text
 from acme_ops_agent.agent.shared.state import AgentState
 from acme_ops_agent.utils.logger import get_logger
 
 logger = get_logger(__name__)
-
-MessageContent = str | list[str | dict[str, object]]
 
 DENIAL_MESSAGE = (
     "I'm unable to process this request. Your message was flagged "
@@ -94,11 +93,7 @@ def create_input_guardrail_node(llm: ChatOpenAI) -> Any:
         state: AgentState, config: RunnableConfig
     ) -> dict[str, Any]:
         last_message = state["messages"][-1]
-        user_text = (
-            last_message.content
-            if isinstance(last_message.content, str) # type: ignore
-            else str(last_message.content) # type: ignore
-        )
+        user_text = content_to_text(getattr(last_message, "content"))  # type: ignore[arg-type]
 
         # --- Layer 1: Pattern matching ---
         matched = _pattern_check(user_text)
@@ -123,8 +118,7 @@ def create_input_guardrail_node(llm: ChatOpenAI) -> Any:
                 config=config,
             )
 
-            content = cast(MessageContent, getattr(response, "content"))
-            verdict = content.strip().upper() if isinstance(content, str) else str(content).strip().upper()
+            verdict = content_to_text(getattr(response, "content")).strip().upper()  # type: ignore[arg-type]
 
             if verdict == "BLOCKED":
                 logger.warning(

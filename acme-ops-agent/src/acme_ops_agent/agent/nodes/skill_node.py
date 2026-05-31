@@ -7,6 +7,8 @@ from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
 
 from acme_ops_agent.agent.mcp_client import MCPConnection
+from acme_ops_agent.agent.shared.parsing import content_to_text
+from acme_ops_agent.agent.shared.skill_limits import DEFAULT_SKILL_LIMITS, SkillLimits
 from acme_ops_agent.agent.skills.escalation_summary import EscalationSummarySkill
 from acme_ops_agent.agent.shared.state import AgentState
 
@@ -14,6 +16,7 @@ from acme_ops_agent.agent.shared.state import AgentState
 def create_escalation_summary_node(
     connection: MCPConnection,
     llm: ChatOpenAI,
+    limits: SkillLimits = DEFAULT_SKILL_LIMITS,
 ) -> Any:
     """
     Factory that returns the escalation summary skill node.
@@ -25,14 +28,14 @@ def create_escalation_summary_node(
     async def escalation_summary_node(
         state: AgentState, config: RunnableConfig
     ) -> dict[str, Any]:
-        skill = EscalationSummarySkill(connection=connection, llm=llm)
+        skill = EscalationSummarySkill(
+            connection=connection,
+            llm=llm,
+            limits=limits,
+        )
 
         last_message = state["messages"][-1]
-        user_text = (
-            last_message.content
-            if isinstance(last_message.content, str)  # type: ignore
-            else str(last_message.content)  # type: ignore
-        )
+        user_text = content_to_text(getattr(last_message, "content"))  # type: ignore[arg-type]
 
         summary = await skill.execute(user_text)
         return {"messages": [AIMessage(content=summary)]}

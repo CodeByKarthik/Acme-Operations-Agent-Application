@@ -3,9 +3,10 @@ from typing import Literal
 
 from langchain_core.messages import AIMessage
 from acme_ops_agent.agent.shared.state import AgentState
+from acme_ops_agent.agent.shared.skill_limits import DEFAULT_AGENT_LIMITS
 from acme_ops_agent.agent.graph.routing import BLOCKED_ROUTE
 
-MAX_TOOL_CALLS = 15
+MAX_TOOL_CALLS = DEFAULT_AGENT_LIMITS.max_tool_calls
 
 
 def route_after_guardrail(state: AgentState) -> Literal["safe", "blocked"]:

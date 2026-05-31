@@ -1,9 +1,12 @@
 from __future__ import annotations
+
 from typing import Any, Callable
+
 from langchain_openai import ChatOpenAI
 
 from acme_ops_agent.agent.mcp_client import MCPConnection
 from acme_ops_agent.agent.nodes.skill_node import create_escalation_summary_node
+from acme_ops_agent.agent.shared.skill_limits import DEFAULT_SKILL_LIMITS, SkillLimits
 
 # Type alias for skill node builder functions
 SkillNodeBuilder = Callable[..., Any]
@@ -17,6 +20,7 @@ SKILL_NODE_BUILDERS: dict[str, SkillNodeBuilder] = {
 def build_skill_nodes(
     connection: MCPConnection,
     llm: ChatOpenAI,
+    limits: SkillLimits = DEFAULT_SKILL_LIMITS,
 ) -> dict[str, Any]:
     """
     Instantiate all registered skill nodes with their dependencies.
@@ -27,6 +31,6 @@ def build_skill_nodes(
     nodes: dict[str, Any] = {}
 
     for name, builder in SKILL_NODE_BUILDERS.items():
-        nodes[name] = builder(connection=connection, llm=llm)
+        nodes[name] = builder(connection=connection, llm=llm, limits=limits)
 
     return nodes

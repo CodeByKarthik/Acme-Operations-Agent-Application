@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 
 from acme_ops_agent.agent.graph.conditions import MAX_TOOL_CALLS
 from acme_ops_agent.agent.prompts import SYSTEM_PROMPT, TOOL_LIMIT_MESSAGE
+from acme_ops_agent.agent.shared.memory import trim_to_turns
 from acme_ops_agent.agent.shared.state import AgentState
 from acme_ops_agent.utils.logger import get_logger
 
@@ -31,7 +32,8 @@ def create_agent_node(llm: ChatOpenAI, llm_with_tools: Any) -> Any:
         role = configurable.get("role", "unknown")
 
         system_prompt = SYSTEM_PROMPT.format(username=username, role=role)
-        messages = [SystemMessage(content=system_prompt)] + list(state["messages"])
+        trimmed = trim_to_turns(list(state["messages"]))
+        messages = [SystemMessage(content=system_prompt)] + trimmed
 
         if state["tool_call_count"] >= MAX_TOOL_CALLS:
             logger.warning(
