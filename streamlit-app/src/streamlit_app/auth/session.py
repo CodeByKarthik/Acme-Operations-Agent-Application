@@ -11,7 +11,9 @@ import streamlit as st
 
 from streamlit_app.auth.oauth import create_oauth_state, validate_oauth_state
 from streamlit_app.config import settings  # type: ignore[import-untyped]
+from streamlit_app.utils.logger import get_logger
 
+logger = get_logger(__name__)
 
 KEYCLOAK_URL = settings.keycloak_url
 KEYCLOAK_EXTERNAL_URL = settings.keycloak_external_url
@@ -63,14 +65,20 @@ def exchange_code_for_token(code: str) -> dict[str, Any] | None:
 
     try:
         response = requests.post(token_url, data=payload, timeout=10)
-    except requests.RequestException:
+    except requests.RequestException as exc:
+        logger.error("Token exchange failed | error: %s", str(exc))
         st.error("Unable to complete sign-in. Please try again.")
         return None
 
     if response.status_code != 200:
+        logger.warning(
+            "Token exchange rejected | status: %d",
+            response.status_code,
+        )
         st.error("Authentication failed. Please try again.")
         return None
 
+    logger.info("Token exchange successful")
     token_data: dict[str, Any] = response.json()
     return token_data
 
@@ -83,11 +91,14 @@ def store_token_response(token_response: dict[str, Any]) -> None:
     expires_in = int(token_response.get("expires_in", 300))
     st.session_state["expires_at"] = time.time() + expires_in
 
+    logger.info("Token stored | expires_in: %ds", expires_in)
+
 
 def refresh_access_token() -> bool:
     refresh_token = st.session_state.get("refresh_token")
 
     if not isinstance(refresh_token, str):
+        logger.warning("Token refresh failed — no refresh token available")
         return False
 
     token_url = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/token"
@@ -101,14 +112,20 @@ def refresh_access_token() -> bool:
 
     try:
         response = requests.post(token_url, data=payload, timeout=10)
-    except requests.RequestException:
+    except requests.RequestException as exc:
+        logger.error("Token refresh request failed | error: %s", str(exc))
         return False
 
     if response.status_code != 200:
+        logger.warning(
+            "Token refresh rejected | status: %d",
+            response.status_code,
+        )
         return False
 
     token_data: dict[str, Any] = response.json()
     store_token_response(token_data)
+    logger.info("Token refreshed successfully")
     return True
 
 
@@ -124,6 +141,7 @@ def ensure_valid_token() -> bool:
     if time.time() < expires_at - TOKEN_REFRESH_SKEW_SECONDS:
         return True
 
+    logger.info("Token nearing expiry, attempting refresh")
     return refresh_access_token()
 
 
@@ -156,18 +174,21 @@ def get_logged_in_user() -> str:
 
 def logout() -> None:
     id_token = st.session_state.get("id_token")
+    username = get_logged_in_user()
 
     for key in [
         "access_token",
         "refresh_token",
         "id_token",
         "expires_at",
-        "last_answer",
-        "last_question",
+        "messages",
+        "conversation_id",
     ]:
         st.session_state.pop(key, None)
 
     st.query_params.clear()
+
+    logger.info("User logged out | username: %s", username)
 
     if isinstance(id_token, str):
         logout_params = {
@@ -198,6 +219,7 @@ def handle_auth_callback() -> bool:
     returned_state = get_query_param("state")
 
     if not validate_oauth_state(returned_state):
+        logger.warning("OAuth callback rejected — invalid state")
         st.error("Invalid authentication response. Please sign in again.")
         st.query_params.clear()
         return True
@@ -206,6 +228,7 @@ def handle_auth_callback() -> bool:
 
     if token_response:
         store_token_response(token_response)
+        logger.info("OAuth callback completed — user authenticated")
         st.query_params.clear()
         st.rerun()
 
