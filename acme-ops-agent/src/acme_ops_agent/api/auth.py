@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, Header, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from acme_ops_agent.auth.keycloak import KeycloakTokenVerifier
@@ -48,6 +48,7 @@ def extract_bearer_token(authorization: str | None) -> str:
 
 
 def get_auth_context(
+    request: Request,
     authorization: str | None = Header(default=None),
     session: Session = Depends(get_db_session),
 ) -> AuthContext:
@@ -59,7 +60,9 @@ def get_auth_context(
     )
 
     try:
-        return auth_service.authenticate(token)
+        auth_context = auth_service.authenticate(token)
+        request.state.auth_context = auth_context
+        return auth_context
     except AuthError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

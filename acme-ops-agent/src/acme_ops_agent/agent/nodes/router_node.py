@@ -28,8 +28,8 @@ def create_router_node(llm: ChatOpenAI) -> Any:
         last_message = state["messages"][-1]
         user_text = (
             last_message.content
-            if isinstance(last_message.content, str)
-            else str(last_message.content)
+            if isinstance(last_message.content, str)  # type: ignore[reportUnknownMemberType]
+            else str(last_message.content)  # type: ignore[reportUnknownMemberType]
         )
 
         response = await llm.ainvoke(
@@ -40,17 +40,17 @@ def create_router_node(llm: ChatOpenAI) -> Any:
             config=config,
         )
 
-        route = response.content.strip().lower().strip('"').strip("'")
+        route = response.content.strip().lower().strip('"').strip("'")  # type: ignore
 
         if route not in VALID_ROUTES:
             logger.warning(
                 "Router returned unknown route '%s', defaulting to '%s'",
-                route,
+                route,  # type: ignore
                 DEFAULT_ROUTE,
             )
             route = DEFAULT_ROUTE
 
-        logger.info("Router classified intent as: %s", route)
+        logger.info("Router classified intent as: %s", route)  # type: ignore
         return {"route": route}
 
     return router_node

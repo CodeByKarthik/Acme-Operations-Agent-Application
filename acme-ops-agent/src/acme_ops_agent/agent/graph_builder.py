@@ -4,7 +4,7 @@ from typing import Any
 
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import END, START, StateGraph  # type: ignore[import-untyped]
 from langgraph.prebuilt import ToolNode
 from pydantic import SecretStr
 
@@ -42,7 +42,7 @@ def build_graph(
         temperature=0,
         api_key=SecretStr(settings.openai_api_key) if settings.openai_api_key else None,
     )
-    llm_with_tools = llm.bind_tools(tools)
+    llm_with_tools: Any = llm.bind_tools(tools)  # type: ignore[reportUnknownMemberType]
     tool_executor = ToolNode(tools)
 
     # --- Create nodes ---
@@ -52,7 +52,7 @@ def build_graph(
     skill_nodes = build_skill_nodes(connection=connection, llm=llm)
 
     # --- Assemble graph ---
-    graph = StateGraph(AgentState)
+    graph: Any = StateGraph(AgentState)
 
     graph.add_node("router", router)
     graph.add_node("agent", agent)
@@ -83,7 +83,7 @@ def build_graph(
     for name in skill_nodes:
         graph.add_edge(name, END)
 
-    compiled = graph.compile()
+    compiled: Any = graph.compile()
 
     logger.info(
         "Built agent graph | %d tools | %d skill routes",

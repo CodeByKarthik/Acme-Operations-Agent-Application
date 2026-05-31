@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
@@ -11,6 +13,38 @@ from acme_ops_agent.agent.prompts.skills import (
 from acme_ops_agent.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+MessageContent = str | list[str | dict[str, object]]
+IssueRecord = dict[str, object]
+
+
+def _content_to_text(content: MessageContent) -> str:
+    if isinstance(content, str):
+        return content
+
+    parts: list[str] = []
+    for item in content:
+        if isinstance(item, str):
+            parts.append(item)
+        else:
+            text_value = item.get("text")
+            if isinstance(text_value, str):
+                parts.append(text_value)
+            else:
+                parts.append(repr(item))
+    return " ".join(parts)
+
+
+def _parse_issue_list(raw: object) -> list[IssueRecord]:
+    if not isinstance(raw, list):
+        return []
+
+    raw_items = cast(list[object], raw)
+    issues: list[IssueRecord] = []
+    for item in raw_items:
+        if isinstance(item, dict):
+            issues.append(cast(IssueRecord, item))
+    return issues
 
 
 class EscalationSummarySkill:
@@ -74,7 +108,7 @@ class EscalationSummarySkill:
         issues_raw = await self._connection.call_tool(
             "list_open_issues", {"customer_id": customer_id}
         )
-        issues = safe_json_parse(issues_raw) or []
+        issues = _parse_issue_list(safe_json_parse(issues_raw))
         logger.info("Fetched %d open issues", len(issues))
 
         # --- Step 4: Fetch updates and actions per issue ---
@@ -124,7 +158,7 @@ class EscalationSummarySkill:
         """Use the LLM to pull the customer name from free text."""
         prompt = CUSTOMER_NAME_EXTRACTION_PROMPT.format(message=message)
         response = await self._llm.ainvoke([HumanMessage(content=prompt)])
-        return response.content.strip()
+        return _content_to_text(cast(MessageContent, getattr(response, "content"))).strip()
 
     async def _synthesise(
         self,
@@ -143,4 +177,4 @@ class EscalationSummarySkill:
             actions_data=actions_data,
         )
         response = await self._llm.ainvoke([SystemMessage(content=prompt)])
-        return response.content
+        return _content_to_text(cast(MessageContent, getattr(response, "content")))

@@ -22,9 +22,11 @@ _RBAC_ERROR_MARKERS = [
 
 
 def _detect_rbac_denial(messages: list[Any]) -> bool:
-    """Scan tool responses for RBAC denial indicators."""
+    """
+    Scan tool responses for RBAC denial indicators.
+    """
     for msg in messages:
-        if isinstance(msg, ToolMessage) and isinstance(msg.content, str):
+        if isinstance(msg, ToolMessage) and isinstance(msg.content, str):  # type: ignore[reportUnknownMemberType]
             content_lower = msg.content.lower()
             if any(marker in content_lower for marker in _RBAC_ERROR_MARKERS):
                 return True
@@ -32,7 +34,9 @@ def _detect_rbac_denial(messages: list[Any]) -> bool:
 
 
 def _collect_tool_names(messages: list[Any]) -> list[str]:
-    """Extract unique tool names from the message history."""
+    """
+    Extract unique tool names from the message history.
+    """
     seen: set[str] = set()
     names: list[str] = []
     for msg in messages:
@@ -141,8 +145,8 @@ class AgentService:
 
             # --- Extract final answer ---
             for msg in reversed(messages):
-                if isinstance(msg, AIMessage) and msg.content:
-                    return str(msg.content)
+                if isinstance(msg, AIMessage) and msg.content:  # type: ignore[reportUnknownMemberType]
+                    return str(msg.content)  # type: ignore[reportUnknownMemberType,reportUnknownArgumentType]
 
         logger.warning("Agent produced no final response")
         return "I was unable to process your request. Please try again."
