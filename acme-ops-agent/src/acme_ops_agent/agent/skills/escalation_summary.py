@@ -8,6 +8,10 @@ from acme_ops_agent.agent.prompts.skills import (
     CUSTOMER_NAME_EXTRACTION_PROMPT,
     ESCALATION_SUMMARY_PROMPT,
 )
+from acme_ops_agent.agent.shared.fallback_response import (
+    DataFallbackContext,
+    build_data_fallback_response,
+)
 from acme_ops_agent.agent.shared.parsing import (
     content_to_text,
     parse_issue_list,
@@ -60,9 +64,13 @@ class EscalationSummarySkill:
         # --- Step 1: Extract customer name ---
         customer_name = await self._extract_customer_name(user_message)
         if customer_name == "UNKNOWN":
-            return (
-                "I could not identify a customer name in your request. "
-                "Please specify which customer you need an escalation summary for."
+            return await self._build_fallback_response(
+                user_message=user_message,
+                context=DataFallbackContext(
+                    reason="missing_customer_name",
+                    entity_type="customer",
+                    details="The request did not contain a customer name that could be extracted confidently.",
+                ),
             )
         logger.info("Extracted customer name: %s", customer_name)
 
@@ -72,7 +80,16 @@ class EscalationSummarySkill:
         )
 
         if customer_raw is None:
-            return "The escalation summary could not be completed — MCP call limit reached."
+            return await self._build_fallback_response(
+                user_message=user_message,
+                context=DataFallbackContext(
+                    reason="tool_limit_reached",
+                    entity_type="customer",
+                    requested_value=customer_name,
+                    tool_name="get_customer_by_name",
+                    details="The MCP call limit was reached before the customer profile could be retrieved.",
+                ),
+            )
 
         if customer_raw.startswith("Error:") or customer_raw in (
             "null",
@@ -80,15 +97,43 @@ class EscalationSummarySkill:
             "",
             "No output returned",
         ):
-            return f"Customer '{customer_name}' was not found in the system."
+            return await self._build_fallback_response(
+                user_message=user_message,
+                context=DataFallbackContext(
+                    reason="not_found",
+                    entity_type="customer",
+                    requested_value=customer_name,
+                    tool_name="get_customer_by_name",
+                    raw_result=customer_raw,
+                ),
+            )
 
         customer = safe_json_parse(customer_raw)
         if customer is None:
-            return f"Customer '{customer_name}' returned unreadable data."
+            return await self._build_fallback_response(
+                user_message=user_message,
+                context=DataFallbackContext(
+                    reason="unreadable_data",
+                    entity_type="customer",
+                    requested_value=customer_name,
+                    tool_name="get_customer_by_name",
+                    raw_result=customer_raw,
+                ),
+            )
 
         customer_id = customer.get("id")
         if not customer_id:
-            return f"Customer '{customer_name}' is missing an ID in the database."
+            return await self._build_fallback_response(
+                user_message=user_message,
+                context=DataFallbackContext(
+                    reason="missing_identifier",
+                    entity_type="customer",
+                    requested_value=customer_name,
+                    tool_name="get_customer_by_name",
+                    raw_result=customer_raw,
+                    details="The customer record was returned without an id field.",
+                ),
+            )
 
         logger.info("Fetched customer profile: %s (id=%s)", customer_name, customer_id)
 
@@ -99,7 +144,16 @@ class EscalationSummarySkill:
         )
 
         if issues_raw is None:
-            return "The escalation summary could not be completed — MCP call limit reached."
+            return await self._build_fallback_response(
+                user_message=user_message,
+                context=DataFallbackContext(
+                    reason="tool_limit_reached",
+                    entity_type="issue_data",
+                    requested_value=customer_name,
+                    tool_name="list_open_issues",
+                    details="The MCP call limit was reached before open issues could be retrieved.",
+                ),
+            )
 
         issues = parse_issue_list(safe_json_parse(issues_raw))
         total_issues = len(issues)
@@ -177,6 +231,19 @@ class EscalationSummarySkill:
 
         logger.info("Escalation Summary Skill completed")
         return summary + truncation_note
+
+    async def _build_fallback_response(
+        self,
+        *,
+        user_message: str,
+        context: DataFallbackContext,
+    ) -> str:
+        """Delegate fallback user messaging to the LLM using structured context."""
+        return await build_data_fallback_response(
+            self._llm,
+            user_message=user_message,
+            context=context,
+        )
 
     async def _guarded_mcp_call(
         self,
