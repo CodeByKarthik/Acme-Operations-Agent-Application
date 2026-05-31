@@ -2,10 +2,20 @@ from __future__ import annotations
 from typing import Literal
 
 from langchain_core.messages import AIMessage
-
 from acme_ops_agent.agent.shared.state import AgentState
+from acme_ops_agent.agent.graph.routing import BLOCKED_ROUTE
 
 MAX_TOOL_CALLS = 15
+
+
+def route_after_guardrail(state: AgentState) -> Literal["safe", "blocked"]:
+    """
+    After the guardrail node, decide whether the request
+    is safe to proceed or should be blocked.
+    """
+    if state["route"] == BLOCKED_ROUTE:
+        return "blocked"
+    return "safe"
 
 
 def route_after_router(state: AgentState) -> str:
