@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, create_model
 
 from acme_ops_agent.utils.logger import get_logger
 
-from .mcp_client import MCPConnection
+from ..mcp_client import MCPConnection
 
 logger = get_logger(__name__)
 

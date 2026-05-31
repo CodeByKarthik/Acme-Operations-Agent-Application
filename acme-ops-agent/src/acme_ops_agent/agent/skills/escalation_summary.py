@@ -1,11 +1,10 @@
-import json
-from typing import Any
+from __future__ import annotations
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
-from acme_ops_agent.agent.mcp_client import MCPConnection
-from acme_ops_agent.agent.prompts import (
+from acme_ops_agent.agent.mcp_client import MCPConnection, safe_json_parse
+from acme_ops_agent.agent.prompts.skills import (
     CUSTOMER_NAME_EXTRACTION_PROMPT,
     ESCALATION_SUMMARY_PROMPT,
 )
@@ -61,7 +60,7 @@ class EscalationSummarySkill:
         if customer_raw.startswith("Error:") or customer_raw in ("null", "None", ""):
             return f"Customer '{customer_name}' was not found in the system."
 
-        customer = self._safe_parse(customer_raw)
+        customer = safe_json_parse(customer_raw)
         if customer is None:
             return f"Customer '{customer_name}' returned unreadable data."
 
@@ -75,7 +74,7 @@ class EscalationSummarySkill:
         issues_raw = await self._connection.call_tool(
             "list_open_issues", {"customer_id": customer_id}
         )
-        issues = self._safe_parse(issues_raw) or []
+        issues = safe_json_parse(issues_raw) or []
         logger.info("Fetched %d open issues", len(issues))
 
         # --- Step 4: Fetch updates and actions per issue ---
@@ -117,14 +116,14 @@ class EscalationSummarySkill:
         logger.info("Escalation Summary Skill completed")
         return summary
 
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
 
     async def _extract_customer_name(self, message: str) -> str:
         """Use the LLM to pull the customer name from free text."""
         prompt = CUSTOMER_NAME_EXTRACTION_PROMPT.format(message=message)
-
-        response = await self._llm.ainvoke(
-            [HumanMessage(content=prompt)]
-        )
+        response = await self._llm.ainvoke([HumanMessage(content=prompt)])
         return response.content.strip()
 
     async def _synthesise(
@@ -143,22 +142,5 @@ class EscalationSummarySkill:
             updates_data=updates_data,
             actions_data=actions_data,
         )
-
-        response = await self._llm.ainvoke(
-            [SystemMessage(content=prompt)]
-        )
+        response = await self._llm.ainvoke([SystemMessage(content=prompt)])
         return response.content
-
-    @staticmethod
-    def _safe_parse(text: str) -> Any:
-        """
-        Attempt to parse JSON from MCP tool output.
-
-        Returns None on failure rather than raising, so
-        the skill can handle missing data gracefully.
-        """
-        try:
-            return json.loads(text)
-        except (json.JSONDecodeError, TypeError):
-            logger.warning("Failed to parse MCP response as JSON: %.200s", text)
-            return None

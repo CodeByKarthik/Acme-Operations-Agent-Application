@@ -1,0 +1,9 @@
+from .escalation_summary import (
+    CUSTOMER_NAME_EXTRACTION_PROMPT,
+    ESCALATION_SUMMARY_PROMPT,
+)
+
+__all__ = [
+    "CUSTOMER_NAME_EXTRACTION_PROMPT",
+    "ESCALATION_SUMMARY_PROMPT",
+]

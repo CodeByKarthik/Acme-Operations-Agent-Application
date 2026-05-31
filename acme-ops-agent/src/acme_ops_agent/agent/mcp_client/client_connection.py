@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 import json
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 from typing import Any
 
-import httpx
 from mcp import ClientSession
-from mcp.client.streamable_http import streamable_http_client
-from mcp.types import Tool as MCPToolDefinition, TextContent
+from mcp.types import Tool as MCPToolDefinition
 
 from acme_ops_agent.utils.logger import get_logger
+
+from .result_parser import extract_text_content
 
 logger = get_logger(__name__)
 
@@ -57,13 +57,7 @@ class MCPConnection:
         )
 
         result = await self._session.call_tool(name, arguments)
-
-        texts: list[str] = []
-        for block in result.content:
-            if isinstance(block, TextContent):
-                texts.append(block.text)
-
-        response = "\n".join(texts) if texts else "No output returned"
+        response = extract_text_content(result.content)
 
         if result.isError:
             logger.warning("MCP tool %s returned error: %s", name, response)
@@ -71,33 +65,3 @@ class MCPConnection:
 
         logger.info("MCP tool %s completed successfully", name)
         return response
-
-
-@asynccontextmanager
-async def connect_mcp(
-    url: str,
-    token: str,
-) -> AsyncIterator[MCPConnection]:
-    """
-    Open an authenticated MCP client session.
-
-    The bearer token is forwarded to the MCP server on every
-    request so that server-side RBAC can enforce permissions.
-
-    The connection remains open for the lifetime of the context
-    manager, allowing the agent to make multiple tool calls
-    within a single reasoning loop.
-    """
-    headers = {"Authorization": f"Bearer {token}"}
-    http_client = httpx.AsyncClient(headers=headers)
-
-    async with http_client:
-        async with streamable_http_client(
-            url=url,
-            http_client=http_client,
-        ) as (read_stream, write_stream, _):
-
-            async with ClientSession(read_stream, write_stream) as session:
-                await session.initialize()
-                logger.info("MCP session established: %s", url)
-                yield MCPConnection(session)
