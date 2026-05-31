@@ -4,7 +4,6 @@ from typing import Any
 
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph  # type: ignore[import-untyped]
 from langgraph.prebuilt import ToolNode
 from pydantic import SecretStr
@@ -27,7 +26,6 @@ logger = get_logger(__name__)
 def build_graph(
     tools: list[BaseTool],
     connection: MCPConnection,
-    checkpointer: BaseCheckpointSaver | None = None, # type: ignore
 ) -> Any:
     """
     Build and compile the full agent graph.
@@ -98,7 +96,7 @@ def build_graph(
     for name in skill_nodes:
         graph.add_edge(name, END)
 
-    compiled: Any = graph.compile(checkpointer=checkpointer)
+    compiled: Any = graph.compile()
 
     logger.info(
         "Built agent graph | %d tools | %d skill routes",
