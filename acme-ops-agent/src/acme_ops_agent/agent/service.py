@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from typing import Any
-
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
-from langgraph.checkpoint.memory import MemorySaver
-
+from acme_ops_agent.agent.cache import (
+    ConversationMemory,
+    ToolResultCache,
+    get_redis,
+)
 from acme_ops_agent.config import settings
 from acme_ops_agent.schema.auth_schema import AuthContext
 from acme_ops_agent.utils.logger import get_logger
 
-from .graph_builder import build_graph  # type: ignore[reportUnknownVariableType]
+from .graph_builder import build_graph
 from .mcp_client import connect_mcp
 from .shared.tool_adapter import create_mcp_tools
 
@@ -23,11 +25,9 @@ _RBAC_ERROR_MARKERS = [
 
 
 def _detect_rbac_denial(messages: list[Any]) -> bool:
-    """
-    Scan tool responses for RBAC denial indicators.
-    """
+    """Scan tool responses for RBAC denial indicators."""
     for msg in messages:
-        if isinstance(msg, ToolMessage) and isinstance(msg.content, str):  # type: ignore[reportUnknownMemberType]
+        if isinstance(msg, ToolMessage) and isinstance(msg.content, str):  # type: ignore
             content_lower = msg.content.lower()
             if any(marker in content_lower for marker in _RBAC_ERROR_MARKERS):
                 return True
@@ -35,9 +35,7 @@ def _detect_rbac_denial(messages: list[Any]) -> bool:
 
 
 def _collect_tool_names(messages: list[Any]) -> list[str]:
-    """
-    Extract unique tool names from the message history.
-    """
+    """Extract unique tool names from the message history."""
     seen: set[str] = set()
     names: list[str] = []
     for msg in messages:
@@ -49,13 +47,25 @@ def _collect_tool_names(messages: list[Any]) -> list[str]:
 
 class AgentService:
     """
-    Stateless service — a new MCP session and agent graph are
-    created per request so each call carries the correct user token.
+    Agent service with Redis-backed conversation memory and tool caching.
+
+    A new MCP session and agent graph are created per request
+    so each call carries the correct user token. Conversation
+    history and tool results persist in Redis.
     """
 
     def __init__(self) -> None:
         self.mcp_url = f"http://{settings.mcp_host}:{settings.mcp_port}/mcp"
-        self._checkpointer = MemorySaver()
+        self._conversation_memory: ConversationMemory | None = None
+        self._tool_cache: ToolResultCache | None = None
+
+    async def _ensure_cache(self) -> None:
+        """Lazily initialize Redis-backed caches on first use."""
+        if self._conversation_memory is None:
+            redis = await get_redis()
+            self._conversation_memory = ConversationMemory(redis)
+            self._tool_cache = ToolResultCache(redis)
+            logger.info("Redis caches initialized")
 
     def _build_config(
         self,
@@ -64,21 +74,14 @@ class AgentService:
     ) -> dict[str, Any]:
         """
         Build the RunnableConfig passed to graph.ainvoke().
-
-        Serves three purposes:
-        - configurable: runtime values nodes need (auth context)
-        - metadata: attached to the LangSmith trace root
-        - tags: filterable labels in LangSmith
         """
         username = auth_context.username if auth_context else "unknown"
         role = auth_context.role.value if auth_context else "unknown"
         user_id = auth_context.app_user_id if auth_context else ""
-        thread_id = conversation_id or "default"
 
         return {
             "run_name": "acme_ops_chat",
             "configurable": {
-                "thread_id": thread_id,
                 "username": username,
                 "role": role,
                 "user_id": user_id,
@@ -108,20 +111,44 @@ class AgentService:
         """
         Execute the agent graph for a single user query.
 
-        Returns the agent's final text answer.
+        Flow:
+        1. Load conversation history from Redis
+        2. Append the new user message
+        3. Run the graph (no checkpointer — history is in the initial state)
+        4. Save the updated history back to Redis
+        5. Return the agent's final answer
         """
         username = auth_context.username if auth_context else "unknown"
-        logger.info("Agent run started | user: %s | message: %.100s", username, message)
+        logger.info(
+            "Agent run started | user: %s | conversation: %s | message: %.100s",
+            username,
+            conversation_id or "new",
+            message,
+        )
 
+        await self._ensure_cache()
+        assert self._conversation_memory is not None #nosec: B101
         config = self._build_config(auth_context, conversation_id)
 
-        async with connect_mcp(self.mcp_url, token) as connection:
+        # --- Load conversation history from Redis ---
+        previous_messages = []
+        if conversation_id:
+            previous_messages = await self._conversation_memory.load(conversation_id)
+
+        # Build initial messages: history + new user message
+        initial_messages = previous_messages + [HumanMessage(content=message)]
+
+        async with connect_mcp(
+            self.mcp_url,
+            token,
+            tool_cache=self._tool_cache,
+        ) as connection:
             tools = await create_mcp_tools(connection)
-            graph = build_graph(tools, connection, checkpointer=self._checkpointer)
+            graph = build_graph(tools, connection)
 
             result = await graph.ainvoke(
                 {
-                    "messages": [HumanMessage(content=message)],
+                    "messages": initial_messages,
                     "route": "",
                     "tool_call_count": 0,
                 },
@@ -129,6 +156,10 @@ class AgentService:
             )
 
             messages = result.get("messages", [])
+
+            # --- Save conversation history to Redis ---
+            if conversation_id:
+                await self._conversation_memory.save(conversation_id, messages)
 
             # --- Post-run logging ---
             tool_names = _collect_tool_names(messages)
@@ -141,16 +172,19 @@ class AgentService:
 
             route = result.get("route", "unknown")
             logger.info(
-                "Agent run completed | route: %s | tools_called: %s | tags: %s",
+                "Agent run completed | route: %s | tools_called: %s | "
+                "total_messages: %d | conversation: %s | tags: %s",
                 route,
                 tool_names,
+                len(messages),
+                conversation_id or "none",
                 config["tags"],
             )
 
             # --- Extract final answer ---
             for msg in reversed(messages):
-                if isinstance(msg, AIMessage) and msg.content:  # type: ignore[reportUnknownMemberType]
-                    return str(msg.content)  # type: ignore[reportUnknownMemberType,reportUnknownArgumentType]
+                if isinstance(msg, AIMessage) and msg.content: # type: ignore
+                    return str(msg.content)  # type: ignore
 
         logger.warning("Agent produced no final response")
         return "I was unable to process your request. Please try again."
