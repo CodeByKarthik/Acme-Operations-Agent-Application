@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from typing import Any
 
 import requests
@@ -10,6 +11,15 @@ from streamlit_app.config import settings  # type: ignore[import-untyped]
 
 
 API_BASE_URL = settings.api_base_url
+
+
+def _get_conversation_id() -> str:
+    """
+    Return a stable conversation ID for the current session.
+    """
+    if "conversation_id" not in st.session_state:
+        st.session_state["conversation_id"] = str(uuid.uuid4())
+    return st.session_state["conversation_id"]
 
 
 def call_agent_api(message: str) -> str:
@@ -23,7 +33,10 @@ def call_agent_api(message: str) -> str:
         "Content-Type": "application/json",
     }
 
-    payload = {"message": message}
+    payload = {
+        "message": message,
+        "conversation_id": _get_conversation_id(),
+    }
 
     try:
         response = requests.post(

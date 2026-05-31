@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langgraph.checkpoint.memory import MemorySaver
 
 from acme_ops_agent.config import settings
 from acme_ops_agent.schema.auth_schema import AuthContext
 from acme_ops_agent.utils.logger import get_logger
 
-from .graph_builder import build_graph
+from .graph_builder import build_graph  # type: ignore[reportUnknownVariableType]
 from .mcp_client import connect_mcp
 from .shared.tool_adapter import create_mcp_tools
 
@@ -54,6 +55,7 @@ class AgentService:
 
     def __init__(self) -> None:
         self.mcp_url = f"http://{settings.mcp_host}:{settings.mcp_port}/mcp"
+        self._checkpointer = MemorySaver()
 
     def _build_config(
         self,
@@ -71,10 +73,12 @@ class AgentService:
         username = auth_context.username if auth_context else "unknown"
         role = auth_context.role.value if auth_context else "unknown"
         user_id = auth_context.app_user_id if auth_context else ""
+        thread_id = conversation_id or "default"
 
         return {
             "run_name": "acme_ops_chat",
             "configurable": {
+                "thread_id": thread_id,
                 "username": username,
                 "role": role,
                 "user_id": user_id,
@@ -113,7 +117,7 @@ class AgentService:
 
         async with connect_mcp(self.mcp_url, token) as connection:
             tools = await create_mcp_tools(connection)
-            graph = build_graph(tools, connection)
+            graph = build_graph(tools, connection, checkpointer=self._checkpointer)
 
             result = await graph.ainvoke(
                 {

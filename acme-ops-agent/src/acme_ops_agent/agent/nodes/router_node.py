@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 
 from acme_ops_agent.agent.graph.routing import DEFAULT_ROUTE, VALID_ROUTES
 from acme_ops_agent.agent.prompts import ROUTER_PROMPT
+from acme_ops_agent.agent.shared.parsing import content_to_text
 from acme_ops_agent.agent.shared.state import AgentState
 from acme_ops_agent.utils.logger import get_logger
 
@@ -26,11 +27,7 @@ def create_router_node(llm: ChatOpenAI) -> Any:
         state: AgentState, config: RunnableConfig
     ) -> dict[str, Any]:
         last_message = state["messages"][-1]
-        user_text = (
-            last_message.content
-            if isinstance(last_message.content, str)  # type: ignore[reportUnknownMemberType]
-            else str(last_message.content)  # type: ignore[reportUnknownMemberType]
-        )
+        user_text = content_to_text(getattr(last_message, "content"))  # type: ignore[arg-type]
 
         response = await llm.ainvoke(
             [
@@ -40,17 +37,17 @@ def create_router_node(llm: ChatOpenAI) -> Any:
             config=config,
         )
 
-        route = response.content.strip().lower().strip('"').strip("'")  # type: ignore
+        route = content_to_text(getattr(response, "content")).strip().lower().strip('"').strip("'")  # type: ignore[arg-type]
 
         if route not in VALID_ROUTES:
             logger.warning(
                 "Router returned unknown route '%s', defaulting to '%s'",
-                route,  # type: ignore
+                route,
                 DEFAULT_ROUTE,
             )
             route = DEFAULT_ROUTE
 
-        logger.info("Router classified intent as: %s", route)  # type: ignore
+        logger.info("Router classified intent as: %s", route)
         return {"route": route}
 
     return router_node
