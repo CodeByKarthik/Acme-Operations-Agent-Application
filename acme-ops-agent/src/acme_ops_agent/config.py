@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     langsmith_endpoint: str = Field(validation_alias="LANGSMITH_ENDPOINT")
     langsmith_project: str = Field(validation_alias="LANGSMITH_PROJECT")
     app_version: str = Field(validation_alias="APP_VERSION")
+    redis_url: str = Field(validation_alias="REDIS_URL")
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
