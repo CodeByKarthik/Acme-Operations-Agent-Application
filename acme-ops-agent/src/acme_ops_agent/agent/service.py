@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Any
-from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from uuid import uuid4
+
+from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, ToolMessage
 from acme_ops_agent.agent.cache import (
     ConversationMemory,
     ToolResultCache,
@@ -24,8 +27,23 @@ _RBAC_ERROR_MARKERS = [
 ]
 
 
+@dataclass
+class AgentResult:
+    """
+    Result from an agent run, used by the chat endpoint.
+    """
+
+    answer: str
+    messages: list[AnyMessage] = field(default_factory=list)  # type: ignore[misc]
+    run_id: str = ""
+    route: str = ""
+    tools_called: list[str] = field(default_factory=list)  # type: ignore[misc]
+
+
 def _detect_rbac_denial(messages: list[Any]) -> bool:
-    """Scan tool responses for RBAC denial indicators."""
+    """
+    Scan tool responses for RBAC denial indicators.
+    """
     for msg in messages:
         if isinstance(msg, ToolMessage) and isinstance(msg.content, str):  # type: ignore
             content_lower = msg.content.lower()
@@ -35,7 +53,9 @@ def _detect_rbac_denial(messages: list[Any]) -> bool:
 
 
 def _collect_tool_names(messages: list[Any]) -> list[str]:
-    """Extract unique tool names from the message history."""
+    """
+    Extract unique tool names from the message history.
+    """
     seen: set[str] = set()
     names: list[str] = []
     for msg in messages:
@@ -71,6 +91,7 @@ class AgentService:
         self,
         auth_context: AuthContext | None,
         conversation_id: str | None,
+        run_id: str,
     ) -> dict[str, Any]:
         """
         Build the RunnableConfig passed to graph.ainvoke().
@@ -80,6 +101,7 @@ class AgentService:
         user_id = auth_context.app_user_id if auth_context else ""
 
         return {
+            "run_id": run_id,
             "run_name": "acme_ops_chat",
             "configurable": {
                 "username": username,
@@ -107,7 +129,7 @@ class AgentService:
         token: str,
         auth_context: AuthContext | None = None,
         conversation_id: str | None = None,
-    ) -> str:
+    ) -> AgentResult:
         """
         Execute the agent graph for a single user query.
 
@@ -119,16 +141,19 @@ class AgentService:
         5. Return the agent's final answer
         """
         username = auth_context.username if auth_context else "unknown"
+        run_id = str(uuid4())
+
         logger.info(
-            "Agent run started | user: %s | conversation: %s | message: %.100s",
+            "Agent run started | user: %s | conversation: %s | run_id: %s | message: %.100s",
             username,
             conversation_id or "new",
+            run_id,
             message,
         )
 
         await self._ensure_cache()
         assert self._conversation_memory is not None #nosec: B101
-        config = self._build_config(auth_context, conversation_id)
+        config = self._build_config(auth_context, conversation_id, run_id)
 
         # --- Load conversation history from Redis ---
         previous_messages = []
@@ -182,9 +207,16 @@ class AgentService:
             )
 
             # --- Extract final answer ---
+            answer = "I was unable to process your request. Please try again."
             for msg in reversed(messages):
-                if isinstance(msg, AIMessage) and msg.content: # type: ignore
-                    return str(msg.content)  # type: ignore
+                if isinstance(msg, AIMessage) and msg.content:  # type: ignore
+                    answer = str(msg.content)  # type: ignore
+                    break
 
-        logger.warning("Agent produced no final response")
-        return "I was unable to process your request. Please try again."
+            return AgentResult(
+                answer=answer,
+                messages=messages,
+                run_id=run_id,
+                route=route,
+                tools_called=tool_names,
+            )
