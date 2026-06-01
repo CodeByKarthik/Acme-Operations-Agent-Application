@@ -2,12 +2,15 @@ from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
-from acme_ops_shared.common.enums import (CustomerHealthEnum, CustomerTierEnum,
-                                          IssuePriorityEnum, IssueStatusEnum,
-                                          NextActionStatusEnum,
-                                          NextActionTypeEnum)
-from acme_ops_shared.db.models.business import (Customer, Issue, IssueUpdate,
-                                                NextAction)
+from acme_ops_shared.common.enums import (
+    CustomerHealthEnum,
+    CustomerTierEnum,
+    IssuePriorityEnum,
+    IssueStatusEnum,
+    NextActionStatusEnum,
+    NextActionTypeEnum,
+)
+from acme_ops_shared.db.models.business import Customer, Issue, IssueUpdate, NextAction
 from acme_ops_shared.db.models.user import AppUser
 from acme_ops_shared.db.session import SessionLocal
 from sqlalchemy import select
@@ -17,8 +20,8 @@ from sqlalchemy.orm import Session
 def get_user_by_username(session: Session, username: str) -> AppUser:
     """
     Helper function to retrieve a user by username. Raises an
-    exception if the user is not found. 
-    
+    exception if the user is not found.
+
     Attributes:
     -----------
     - session: SQLAlchemy Session object for database access.
@@ -45,16 +48,16 @@ def get_or_create_customer(
     notes: str,
 ) -> Customer:
     """
-    Retrieves an existing customer by name or creates a new 
+    Retrieves an existing customer by name or creates a new
     one if it doesn't exist.
-    
+
     Attributes:
     - session: SQLAlchemy Session object for database access.
     - name: Name of the customer (must be unique).
     - industry: Industry vertical of the customer.
     - tier: Customer tier (e.g., enterprise, mid-market).
     - health_status: Current health status of the customer.
-    - account_owner_user_id: User ID of the account 
+    - account_owner_user_id: User ID of the account
       owner (sales representative).
     - contract_value: Total contract value for the customer.
     - notes: Additional notes about the customer.
@@ -81,12 +84,12 @@ def get_or_create_issue(
     session: Session,
     *,
     external_ref: str,
-    customer_id : UUID,
+    customer_id: UUID,
     title: str,
     description: str,
     status: IssueStatusEnum,
     priority: IssuePriorityEnum,
-    assigned_to_user_id : UUID | None,
+    assigned_to_user_id: UUID | None,
     source_system: str,
     opened_at: datetime,
     due_at: datetime | None,
@@ -94,20 +97,20 @@ def get_or_create_issue(
     """
     Retrieves an existing issue by external reference or creates a new
     one if it doesn't exist.
-    
+
     Attributes:
     -----------
     - session: SQLAlchemy Session object for database access.
-    - external_ref: Unique external reference for the 
+    - external_ref: Unique external reference for the
       issue (e.g., from a support system).
     - customer_id: ID of the associated customer.
     - title: Short title describing the issue.
     - description: Detailed description of the issue.
     - status: Current status of the issue (e.g., open, in progress).
     - priority: Priority level of the issue (e.g., P1, P2).
-    - assigned_to_user_id: User ID of the support agent 
+    - assigned_to_user_id: User ID of the support agent
       assigned to the issue.
-    - source_system: Name of the external system where 
+    - source_system: Name of the external system where
       the issue originated.
     - opened_at: Timestamp when the issue was opened.
     - due_at: Timestamp when the issue is due to be resolved.
@@ -136,8 +139,8 @@ def get_or_create_issue(
 def add_issue_update_if_missing(
     session: Session,
     *,
-    issue_id : UUID,
-    author_user_id : UUID | None,
+    issue_id: UUID,
+    author_user_id: UUID | None,
     author_name: str,
     author_role: str,
     update_text: str,
@@ -147,17 +150,17 @@ def add_issue_update_if_missing(
     """
     Adds an issue update if an identical update does not
     already exist for the issue.
-    
+
     Attributes:
     -----------
     - session: SQLAlchemy Session object for database access.
     - issue_id: ID of the issue to which the update belongs.
-    - author_user_id: User ID of the update author 
+    - author_user_id: User ID of the update author
       (can be null for system updates).
     - author_name: Name of the update author (for display purposes).
     - author_role: Role of the update author (e.g., support_user, admin).
     - update_text: Text content of the issue update.
-    - is_customer_visible: Whether this update should be 
+    - is_customer_visible: Whether this update should be
       visible to the customer.
     - created_at: Timestamp when the update was created.
     """
@@ -186,31 +189,31 @@ def add_issue_update_if_missing(
 def add_next_action_if_missing(
     session: Session,
     *,
-    issue_id : UUID,
+    issue_id: UUID,
     action_type: NextActionTypeEnum,
     action_text: str,
-    owner_user_id : UUID | None,
+    owner_user_id: UUID | None,
     due_at: datetime | None,
     status: NextActionStatusEnum,
-    created_by_user_id : UUID | None,
+    created_by_user_id: UUID | None,
     created_by_role: str,
 ) -> None:
     """
     Adds a next action to an issue if an identical action does not
     already exist for the issue.
-    
+
     Attributes:
     -----------
     - session: SQLAlchemy Session object for database access.
     - issue_id: ID of the issue to which the next action belongs.
-    - action_type: Type of the next action (e.g., 
+    - action_type: Type of the next action (e.g.,
       technical investigation, customer update).
     - action_text: Text describing the next action to be taken.
     - owner_user_id: User ID of the person responsible for the next action.
     - due_at: Timestamp when the next action is due.
     - status: Current status of the next action (e.g., open, completed).
     - created_by_user_id: User ID of the person who created the next action.
-    - created_by_role: Role of the person who created the 
+    - created_by_role: Role of the person who created the
       next action (e.g., support_user, admin).
     """
     existing = session.scalar(

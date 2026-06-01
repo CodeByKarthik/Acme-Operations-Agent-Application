@@ -31,10 +31,10 @@ class EvaluationScores:
     rbac_compliance: int = 1  # default pass unless violation detected
 
     # Justifications
-    reasons: dict[str, str] = field(default_factory=dict) # type: ignore
+    reasons: dict[str, str] = field(default_factory=dict)  # type: ignore
 
     # Metadata
-    tools_called: list[str] = field(default_factory=list) # type: ignore
+    tools_called: list[str] = field(default_factory=list)  # type: ignore
 
     def to_dict(self) -> dict[str, object]:
         """Convert to a dict for logging."""

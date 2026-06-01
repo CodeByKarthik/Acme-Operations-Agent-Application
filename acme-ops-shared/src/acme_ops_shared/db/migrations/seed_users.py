@@ -38,9 +38,7 @@ def main() -> None:
         role_by_name: dict[str, AppRole] = {}
 
         for role_name, description in ROLES:
-            role = db.scalar(
-                select(AppRole).where(AppRole.name == role_name)
-            )
+            role = db.scalar(select(AppRole).where(AppRole.name == role_name))
 
             if role is None:
                 role = AppRole(
@@ -53,9 +51,7 @@ def main() -> None:
             role_by_name[role_name] = role
 
         for user_data in USERS:
-            user = db.scalar(
-                select(AppUser).where(AppUser.email == user_data["email"])
-            )
+            user = db.scalar(select(AppUser).where(AppUser.email == user_data["email"]))
 
             if user is None:
                 role = role_by_name[user_data["role"]]

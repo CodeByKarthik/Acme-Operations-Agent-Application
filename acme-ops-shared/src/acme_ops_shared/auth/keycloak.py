@@ -14,9 +14,10 @@ class KeycloakTokenVerifier:
     """
     Verifies and decodes JWT access tokens issued by Keycloak.
     """
+
     def __init__(self) -> None:
         """
-        Initialize the token verifier using settings from 
+        Initialize the token verifier using settings from
         environment variables.
         """
         self.issuers = [settings.keycloak_issuer]
@@ -105,7 +106,7 @@ class KeycloakTokenVerifier:
             email=payload.email,
             roles=set(payload.realm_access.roles),
         )
-    
+
     def _validate_client(self, payload: dict[str, Any]) -> None:
         """
         Ensure the token was issued for this application client.

@@ -1,9 +1,11 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from acme_ops_shared.common.enums import (IssueStatusEnum,
-                                          NextActionStatusEnum,
-                                          NextActionTypeEnum)
+from acme_ops_shared.common.enums import (
+    IssueStatusEnum,
+    NextActionStatusEnum,
+    NextActionTypeEnum,
+)
 from acme_ops_shared.db.models.business import Issue, IssueUpdate, NextAction
 from sqlalchemy.orm import Session
 
@@ -13,6 +15,7 @@ class BusinessWriteRepository:
     Repository for write operations on business entities
     for issues, updates, and next actions.
     """
+
     def __init__(self, session: Session) -> None:
         """
         Initialize the repository with a SQLAlchemy session.
@@ -26,7 +29,7 @@ class BusinessWriteRepository:
         status: IssueStatusEnum,
     ) -> Issue | None:
         """
-        Update an issue status and maintain 
+        Update an issue status and maintain
         resolved_at when needed.
         """
         issue = self.session.get(Issue, issue_id)
@@ -64,7 +67,7 @@ class BusinessWriteRepository:
         """
         Add a progress update or comment to an issue.
         """
-        
+
         issue_update = IssueUpdate(
             issue_id=issue_id,
             author_user_id=author_user_id,
@@ -94,7 +97,7 @@ class BusinessWriteRepository:
         """
         Create an open next action for an issue.
         """
-        
+
         next_action = NextAction(
             issue_id=issue_id,
             action_type=action_type,
@@ -123,7 +126,7 @@ class BusinessWriteRepository:
         status: NextActionStatusEnum | None = None,
     ) -> NextAction | None:
         """
-        Update next action fields and maintain 
+        Update next action fields and maintain
         completed_at when needed.
         """
         next_action = self.session.get(NextAction, next_action_id)

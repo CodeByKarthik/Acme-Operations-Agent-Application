@@ -6,18 +6,24 @@ from acme_ops_backend.config import settings
 from acme_ops_shared.utils.logger import get_logger
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langgraph.graph import (END, START,  # type: ignore[import-untyped]
-                             StateGraph)
+from langgraph.graph import (
+    END,
+    START,  # type: ignore[import-untyped]
+    StateGraph,
+)
 from langgraph.prebuilt import ToolNode
 from pydantic import SecretStr
 
-from .graph.conditions import (route_after_guardrail, route_after_router,
-                               should_continue)
+from .graph.conditions import route_after_guardrail, route_after_router, should_continue
 from .graph.registry import build_skill_nodes
 from .graph.routing import DEFAULT_ROUTE, SKILL_ROUTES
 from .mcp_client import MCPConnection
-from .nodes import (create_agent_node, create_input_guardrail_node,
-                    create_router_node, create_tool_node)
+from .nodes import (
+    create_agent_node,
+    create_input_guardrail_node,
+    create_router_node,
+    create_tool_node,
+)
 from .shared.state import AgentState
 
 logger = get_logger(__name__)

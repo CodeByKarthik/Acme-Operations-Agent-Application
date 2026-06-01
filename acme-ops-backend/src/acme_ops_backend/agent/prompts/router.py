@@ -1,4 +1,3 @@
-
 ROUTER_PROMPT = """\
 You are a request classifier for the Acme Operations Assistant.
 Classify the user's message into exactly one category.

@@ -3,10 +3,15 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from acme_ops_shared.common.enums import (CustomerHealthEnum, CustomerTierEnum,
-                                          IssuePriorityEnum, IssueStatusEnum,
-                                          NextActionStatusEnum,
-                                          NextActionTypeEnum, enum_values)
+from acme_ops_shared.common.enums import (
+    CustomerHealthEnum,
+    CustomerTierEnum,
+    IssuePriorityEnum,
+    IssueStatusEnum,
+    NextActionStatusEnum,
+    NextActionTypeEnum,
+    enum_values,
+)
 from acme_ops_shared.db.base import Base
 from sqlalchemy import Boolean, DateTime
 from sqlalchemy import Enum as SAEnum
@@ -17,8 +22,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class Customer(Base):
     """
-    Represents a Customer Model in the system. 
+    Represents a Customer Model in the system.
     """
+
     __tablename__ = "customers"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -59,12 +65,17 @@ class Customer(Base):
     )
 
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
-    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     issues: Mapped[list["Issue"]] = relationship(back_populates="customer")
@@ -80,6 +91,7 @@ class Issue(Base):
     """
     Represents an Issue Model in the system.
     """
+
     __tablename__ = "issues"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -127,15 +139,24 @@ class Issue(Base):
     )
 
     opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    due_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    resolved_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
-    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     customer: Mapped[Customer] = relationship(back_populates="issues")
@@ -156,6 +177,7 @@ class IssueUpdate(Base):
     """
     Represents an Issue Update Model in the system.
     """
+
     __tablename__ = "issue_updates"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -176,7 +198,9 @@ class IssueUpdate(Base):
     author_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     author_role: Mapped[str | None] = mapped_column(String(50), nullable=True)
     update_text: Mapped[str] = mapped_column(Text, nullable=False)
-    is_customer_visible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_customer_visible: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -194,6 +218,7 @@ class NextAction(Base):
     """
     Represents a Next Action Model in the system.
     """
+
     __tablename__ = "next_actions"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -220,7 +245,9 @@ class NextAction(Base):
         ForeignKey("app_users.id", ondelete="SET NULL"),
         nullable=True,
     )
-    due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    due_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     status: Mapped[NextActionStatusEnum] = mapped_column(
         SAEnum(
             NextActionStatusEnum,
@@ -236,12 +263,17 @@ class NextAction(Base):
         nullable=True,
     )
     created_by_role: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
     )
 
     issue: Mapped[Issue] = relationship(back_populates="next_actions")

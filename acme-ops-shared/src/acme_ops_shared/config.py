@@ -6,8 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = PROJECT_ROOT / ".env"
 
-class Settings(BaseSettings):
 
+class Settings(BaseSettings):
     database_url: str = Field(validation_alias="DATABASE_URL")
     keycloak_issuer: str = Field(validation_alias="KEYCLOAK_ISSUER")
     keycloak_issuer_docker: str | None = Field(
@@ -27,12 +27,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore[call-arg]
-
-
-
-
-
-
-
-
-

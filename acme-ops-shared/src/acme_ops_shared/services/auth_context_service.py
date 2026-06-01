@@ -1,7 +1,10 @@
 from acme_ops_shared.auth.keycloak import KeycloakTokenVerifier
 from acme_ops_shared.common.enums import AppRole
-from acme_ops_shared.common.exceptions import (AppUserNotFoundError, AuthError,
-                                               PermissionDenied)
+from acme_ops_shared.common.exceptions import (
+    AppUserNotFoundError,
+    AuthError,
+    PermissionDenied,
+)
 from acme_ops_shared.db.repositories.user_repository import AppUserRepository
 from acme_ops_shared.schema.auth_schema import AuthContext
 
@@ -9,13 +12,14 @@ from acme_ops_shared.schema.auth_schema import AuthContext
 class AuthContextService:
     """
     Service that orchestrates authentication and authorization.
-    
+
     Responsibilities:
     1. Verify the incoming JWT token via Keycloak.
     2. Fetch the corresponding application user from the database.
     3. Ensure the token's roles match the user's assigned application role.
     4. Return a normalized AuthContext for downstream use.
     """
+
     def __init__(
         self,
         token_verifier: KeycloakTokenVerifier,
@@ -26,7 +30,7 @@ class AuthContextService:
 
         Attributes:
         -----------
-        - token_verifier: Component that validates Keycloak 
+        - token_verifier: Component that validates Keycloak
             tokens and extracts user data.
         - user_repository: Repository for accessing application users.
         """
@@ -54,9 +58,9 @@ class AuthContextService:
 
         Raises:
         -------
-            - AuthError: If the token is invalid or the user is not 
+            - AuthError: If the token is invalid or the user is not
             found in the app DB.
-            
+
             - PermissionDenied: If the token's roles do not match
               the application role.
         """
@@ -67,7 +71,9 @@ class AuthContextService:
                 token_user.username
             )
         except AppUserNotFoundError as exc:
-            raise AuthError("Authenticated user is not registered in the application") from exc
+            raise AuthError(
+                "Authenticated user is not registered in the application"
+            ) from exc
 
         self._ensure_token_role_matches_app_role(
             token_roles=token_user.roles,
@@ -84,7 +90,9 @@ class AuthContextService:
             app_user.keycloak_user_id = token_user.keycloak_user_id
 
         elif app_user.keycloak_user_id != token_user.keycloak_user_id:
-            raise AuthError("Authenticated token does not match the registered Keycloak user")
+            raise AuthError(
+                "Authenticated token does not match the registered Keycloak user"
+            )
 
         try:
             app_role = AppRole(app_user.role)

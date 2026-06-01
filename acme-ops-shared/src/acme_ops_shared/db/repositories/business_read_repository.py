@@ -1,18 +1,18 @@
 from uuid import UUID
 
 from acme_ops_shared.common.enums import IssueStatusEnum, NextActionStatusEnum
-from acme_ops_shared.db.models.business import (Customer, Issue, IssueUpdate,
-                                                NextAction)
+from acme_ops_shared.db.models.business import Customer, Issue, IssueUpdate, NextAction
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 
 class BusinessReadRepository:
     """
-    Repository for read-only business data access, 
-    including customers, issues, updates 
+    Repository for read-only business data access,
+    including customers, issues, updates
     and next actions.
     """
+
     def __init__(self, session: Session) -> None:
         """
         Initialize the repository with a SQLAlchemy session.

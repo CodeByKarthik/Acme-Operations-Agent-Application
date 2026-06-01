@@ -39,9 +39,7 @@ async def run_background_evaluation(
             model=settings.llm_model,
             temperature=0,
             api_key=(
-                SecretStr(settings.openai_api_key)
-                if settings.openai_api_key
-                else None
+                SecretStr(settings.openai_api_key) if settings.openai_api_key else None
             ),
         )
 

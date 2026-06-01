@@ -1,8 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import (Boolean, DateTime, ForeignKey, String,
-                        UniqueConstraint, func)
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,9 +10,10 @@ from ...db.base import Base
 
 class AppRole(Base):
     """
-    Represents a Role in the system, which can be assigned 
+    Represents a Role in the system, which can be assigned
     to users for access control.
     """
+
     __tablename__ = "app_roles"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -47,9 +47,10 @@ class AppRole(Base):
 
 class AppUser(Base):
     """
-    Represents a User in the system, which can be 
+    Represents a User in the system, which can be
     authenticated and assigned roles for access control.
     """
+
     __tablename__ = "app_users"
 
     id: Mapped[uuid.UUID] = mapped_column(

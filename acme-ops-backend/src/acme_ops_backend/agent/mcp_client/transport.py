@@ -37,7 +37,6 @@ async def connect_mcp(
             url=url,
             http_client=http_client,
         ) as (read_stream, write_stream, _):
-
             async with ClientSession(read_stream, write_stream) as session:
                 await session.initialize()
                 logger.info("MCP session established: %s", url)

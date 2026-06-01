@@ -4,9 +4,10 @@ from pydantic import BaseModel, Field
 
 class RealmAccess(BaseModel):
     """
-    Represents the realm access information in the Keycloak 
+    Represents the realm access information in the Keycloak
     token payload, including the roles assigned to the user.
     """
+
     roles: list[str] = Field(default_factory=list)
 
 
@@ -15,11 +16,12 @@ class KeycloakTokenPayload(BaseModel):
     Represents the payload of a Keycloak token, containing user
     information and access details.
     """
+
     iss: str
     azp: str
     preferred_username: str
 
-    sub: str | None = None 
+    sub: str | None = None
     email: str | None = None
     name: str | None = None
     given_name: str | None = None
@@ -35,7 +37,7 @@ class AuthenticatedUser(BaseModel):
     the user's ID, username, roles, and optional Keycloak
     user ID and email.
     """
-    
+
     username: str
     roles: set[str]
 
@@ -44,14 +46,15 @@ class AuthenticatedUser(BaseModel):
 
     def has_role(self, role: str) -> bool:
         return role in self.roles
-    
+
 
 class AppUserDTO(BaseModel):
     """
-    Data Transfer Object (DTO) representing an application 
+    Data Transfer Object (DTO) representing an application
     user, containing the user's ID, username, email,
     full name, role, and active status.
     """
+
     id: str
     username: str
     email: str
@@ -63,9 +66,10 @@ class AppUserDTO(BaseModel):
 
 class AuthContext(BaseModel):
     """
-    Represents the authentication context for a user, 
+    Represents the authentication context for a user,
     containing the application user details.
     """
+
     app_user_id: str
     username: str
     role: AppRole

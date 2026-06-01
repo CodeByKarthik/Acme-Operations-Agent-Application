@@ -4,11 +4,9 @@ from typing import Any
 
 from acme_ops_backend.agent.mcp_client import MCPConnection
 from acme_ops_backend.agent.shared.parsing import content_to_text
-from acme_ops_backend.agent.shared.skill_limits import (DEFAULT_SKILL_LIMITS,
-                                                        SkillLimits)
+from acme_ops_backend.agent.shared.skill_limits import DEFAULT_SKILL_LIMITS, SkillLimits
 from acme_ops_backend.agent.shared.state import AgentState
-from acme_ops_backend.agent.skills.escalation_summary import \
-    EscalationSummarySkill
+from acme_ops_backend.agent.skills.escalation_summary import EscalationSummarySkill
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI

@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from acme_ops_backend.agent.mcp_client import MCPConnection
-from acme_ops_backend.agent.nodes.skill_node import \
-    create_escalation_summary_node
-from acme_ops_backend.agent.shared.skill_limits import (DEFAULT_SKILL_LIMITS,
-                                                        SkillLimits)
+from acme_ops_backend.agent.nodes.skill_node import create_escalation_summary_node
+from acme_ops_backend.agent.shared.skill_limits import DEFAULT_SKILL_LIMITS, SkillLimits
 from langchain_openai import ChatOpenAI
 
 # Type alias for skill node builder functions

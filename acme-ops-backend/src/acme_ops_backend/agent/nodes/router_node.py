@@ -22,9 +22,7 @@ def create_router_node(llm: ChatOpenAI) -> Any:
     name that determines which graph branch handles the request.
     """
 
-    async def router_node(
-        state: AgentState, config: RunnableConfig
-    ) -> dict[str, Any]:
+    async def router_node(state: AgentState, config: RunnableConfig) -> dict[str, Any]:
         last_message = state["messages"][-1]
         user_text = content_to_text(getattr(last_message, "content"))  # type: ignore[arg-type]
 
@@ -36,7 +34,13 @@ def create_router_node(llm: ChatOpenAI) -> Any:
             config=config,
         )
 
-        route = content_to_text(getattr(response, "content")).strip().lower().strip('"').strip("'")  # type: ignore[arg-type]
+        route = (
+            content_to_text(getattr(response, "content"))
+            .strip()
+            .lower()
+            .strip('"')
+            .strip("'")
+        )  # type: ignore[arg-type]
 
         if route not in VALID_ROUTES:
             logger.warning(

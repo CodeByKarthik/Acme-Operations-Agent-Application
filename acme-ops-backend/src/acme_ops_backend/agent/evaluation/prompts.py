@@ -1,4 +1,3 @@
-
 EVALUATION_PROMPT = """\
 You are an evaluation judge for an enterprise operations assistant.
 

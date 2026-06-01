@@ -1,5 +1,3 @@
-
-
 SYSTEM_PROMPT = """\
 You are the Acme Operations Assistant. You help internal staff — sales, \
 support, and operations — manage customer accounts and resolve support issues.

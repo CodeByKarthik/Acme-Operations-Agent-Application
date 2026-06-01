@@ -24,8 +24,7 @@ def trim_to_turns(
     affects what the LLM sees in its context window.
     """
     human_indices = [
-        i for i, msg in enumerate(messages)
-        if isinstance(msg, HumanMessage)
+        i for i, msg in enumerate(messages) if isinstance(msg, HumanMessage)
     ]
 
     if len(human_indices) <= max_turns:

@@ -1,8 +1,7 @@
 from typing import Annotated
 
 from langchain_core.messages import AnyMessage
-from langgraph.graph.message import \
-    add_messages  # type: ignore[import-untyped]
+from langgraph.graph.message import add_messages  # type: ignore[import-untyped]
 from typing_extensions import TypedDict
 
 

@@ -1,4 +1,3 @@
-
 CUSTOMER_NAME_EXTRACTION_PROMPT = """\
 Extract the customer or company name from the following user message.
 Return ONLY the customer name. Nothing else.

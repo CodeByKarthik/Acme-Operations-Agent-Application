@@ -2,18 +2,23 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
-from acme_ops_shared.common.enums import (CustomerHealthEnum, CustomerTierEnum,
-                                          IssuePriorityEnum, IssueStatusEnum,
-                                          NextActionStatusEnum,
-                                          NextActionTypeEnum)
+from acme_ops_shared.common.enums import (
+    CustomerHealthEnum,
+    CustomerTierEnum,
+    IssuePriorityEnum,
+    IssueStatusEnum,
+    NextActionStatusEnum,
+    NextActionTypeEnum,
+)
 from pydantic import BaseModel, Field, field_validator
 
 
 class CustomerCreate(BaseModel):
     """
-    Represents the data required to create a new customer 
+    Represents the data required to create a new customer
     in the system.
     """
+
     name: str = Field(min_length=1, max_length=255)
     industry: str | None = Field(default=None, max_length=100)
     tier: CustomerTierEnum
@@ -28,6 +33,7 @@ class CustomerRead(BaseModel):
     Represents the data of a customer as stored in the system,
     including metadata such as creation and update timestamps.
     """
+
     id: UUID
     name: str
     industry: str | None
@@ -59,6 +65,7 @@ class IssueCreate(BaseModel):
     Represents the data required to create a new issue in
     the system.
     """
+
     customer_id: UUID
     external_ref: str = Field(min_length=1, max_length=50)
     title: str = Field(min_length=1, max_length=255)
@@ -75,6 +82,7 @@ class IssueRead(BaseModel):
     """
     Represents the data of an issue as stored in the system.
     """
+
     id: UUID
     customer_id: UUID
     external_ref: str
@@ -99,6 +107,7 @@ class IssueUpdateCreate(BaseModel):
     Represents the data required to create a new update for an
     issue in the system.
     """
+
     issue_id: UUID
     author_user_id: UUID | None = None
     author_name: str | None = Field(default=None, max_length=255)
@@ -111,6 +120,7 @@ class IssueUpdateRead(BaseModel):
     """
     Represents the data of an issue update as stored in the system.
     """
+
     id: UUID
     issue_id: UUID
     author_user_id: UUID | None
@@ -128,6 +138,7 @@ class NextActionCreate(BaseModel):
     Represents the data required to create a new next action for an
     issue in the system.
     """
+
     issue_id: UUID
     action_type: NextActionTypeEnum
     action_text: str = Field(min_length=1)
@@ -141,6 +152,7 @@ class NextActionRead(BaseModel):
     """
     Represents the data of a next action as stored in the system.
     """
+
     id: UUID
     issue_id: UUID
     action_type: NextActionTypeEnum

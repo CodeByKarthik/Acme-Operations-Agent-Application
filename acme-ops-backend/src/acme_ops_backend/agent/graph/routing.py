@@ -1,4 +1,3 @@
-
 # --- Guardrail routes ---
 
 BLOCKED_ROUTE = "blocked"

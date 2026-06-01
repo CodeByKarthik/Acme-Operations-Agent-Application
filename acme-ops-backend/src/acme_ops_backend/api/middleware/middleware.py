@@ -1,7 +1,6 @@
 import structlog
 from fastapi import Request
-from starlette.middleware.base import (BaseHTTPMiddleware,
-                                       RequestResponseEndpoint)
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.responses import Response
 
 from .observability import new_request_id, now_ms, request_id_ctx

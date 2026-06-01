@@ -135,7 +135,6 @@ def mcp_schema_to_pydantic(
     return create_model(model_name, **field_definitions)  # type: ignore[call-overload]
 
 
-
 class MCPToolWrapper(BaseTool):
     """
     LangChain tool that delegates execution to an MCP tool

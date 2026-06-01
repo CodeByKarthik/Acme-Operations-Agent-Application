@@ -6,8 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = PROJECT_ROOT / ".env"
 
-class Settings(BaseSettings):
 
+class Settings(BaseSettings):
     mcp_host: str = Field(validation_alias="MCP_HOST")
     mcp_port: int = Field(validation_alias="MCP_PORT")
     api_host: str = Field(validation_alias="API_HOST")
@@ -29,12 +29,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore[call-arg]
-
-
-
-
-
-
-
-
-

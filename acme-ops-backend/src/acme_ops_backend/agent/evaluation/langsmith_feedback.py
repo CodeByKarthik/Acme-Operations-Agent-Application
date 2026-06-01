@@ -38,17 +38,21 @@ def log_evaluation_to_langsmith(
     feedback_entries = [
         ("groundedness", scores.groundedness, scores.reasons.get("groundedness", "")),
         ("relevance", scores.relevance, scores.reasons.get("relevance", "")),
-        ("hallucination", scores.hallucination, scores.reasons.get("hallucination", "")),
+        (
+            "hallucination",
+            scores.hallucination,
+            scores.reasons.get("hallucination", ""),
+        ),
         ("tool_selection", scores.tool_selection * 5, ""),
         ("rbac_compliance", scores.rbac_compliance * 5, ""),
     ]
 
     for key, score, comment in feedback_entries:
         if score == 0 and key in ("groundedness", "relevance", "hallucination"):
-            continue 
+            continue
 
         try:
-            client.create_feedback( # type: ignore
+            client.create_feedback(  # type: ignore
                 run_id=run_id,
                 key=key,
                 score=score / 5.0,  # Normalize 1-5 to 0.0-1.0

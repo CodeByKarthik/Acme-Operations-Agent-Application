@@ -23,9 +23,7 @@ def create_agent_node(llm: ChatOpenAI, llm_with_tools: Any) -> Any:
         llm_with_tools: LLM with MCP tools bound for normal reasoning.
     """
 
-    async def agent_node(
-        state: AgentState, config: RunnableConfig
-    ) -> dict[str, Any]:
+    async def agent_node(state: AgentState, config: RunnableConfig) -> dict[str, Any]:
         configurable = config.get("configurable", {})
         username = configurable.get("username", "unknown")
         role = configurable.get("role", "unknown")

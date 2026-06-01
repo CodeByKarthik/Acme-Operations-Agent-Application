@@ -5,8 +5,13 @@ from typing import Any
 
 from acme_ops_backend.agent.shared.parsing import content_to_text
 from acme_ops_shared.utils.logger import get_logger
-from langchain_core.messages import (AIMessage, AnyMessage, HumanMessage,
-                                     SystemMessage, ToolMessage)
+from langchain_core.messages import (
+    AIMessage,
+    AnyMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+)
 from langchain_openai import ChatOpenAI
 from langsmith import tracing_context  # type: ignore[attr-defined]
 
@@ -54,7 +59,7 @@ def _extract_final_answer(messages: list[AnyMessage]) -> str:
     Find the last AIMessage with content.
     """
     for msg in reversed(messages):
-        if isinstance(msg, AIMessage) and msg.content: # type: ignore
+        if isinstance(msg, AIMessage) and msg.content:  # type: ignore
             return content_to_text(msg.content)  # type: ignore[arg-type]
     return ""
 
@@ -70,7 +75,6 @@ def _extract_tool_names(messages: list[AnyMessage]) -> list[str]:
             seen.add(msg.name)
             names.append(msg.name)
     return names
-
 
 
 # ---- LLM-judged scoring -----
@@ -139,8 +143,7 @@ async def _run_llm_judge(
     return _parse_llm_scores(response_text)
 
 
-
-# ----- Deterministic checks (RBAC & Tool Selection) ----- 
+# ----- Deterministic checks (RBAC & Tool Selection) -----
 
 
 def _check_rbac_compliance(
@@ -206,7 +209,6 @@ def _check_tool_selection(
     expected_set = set(expected_tools)
 
     return 1 if expected_set.issubset(called_set) else 0
-
 
 
 # ---- Evaluation Response Scoring Pipeline -----

@@ -1,5 +1,3 @@
-
-
 INPUT_GUARDRAIL_PROMPT = """\
 You are a security classifier for an enterprise operations assistant.
 

@@ -4,13 +4,11 @@ from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
-from acme_ops_backend.agent.cache import (ConversationMemory, ToolResultCache,
-                                          get_redis)
+from acme_ops_backend.agent.cache import ConversationMemory, ToolResultCache, get_redis
 from acme_ops_backend.config import settings
 from acme_ops_shared.schema.auth_schema import AuthContext
 from acme_ops_shared.utils.logger import get_logger
-from langchain_core.messages import (AIMessage, AnyMessage, HumanMessage,
-                                     ToolMessage)
+from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, ToolMessage
 
 from .graph_builder import build_graph
 from .mcp_client import connect_mcp
@@ -151,7 +149,7 @@ class AgentService:
         )
 
         await self._ensure_cache()
-        assert self._conversation_memory is not None #nosec: B101
+        assert self._conversation_memory is not None  # nosec: B101
         config = self._build_config(auth_context, conversation_id, run_id)
 
         # --- Load conversation history from Redis ---

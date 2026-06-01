@@ -30,30 +30,25 @@ _INJECTION_PATTERNS: list[re.Pattern[str]] = [
         r"disregard\s+(all\s+)?(previous|prior|above|your)\s+(instructions?|prompts?|rules?)",
         r"forget\s+(all\s+)?(previous|prior|above|your)\s+(instructions?|prompts?|rules?)",
         r"override\s+(your|the|all|system)\s+(instructions?|prompts?|rules?|settings?)",
-
         # Persona hijacking
         r"you\s+are\s+now\s+(?:a\s+)?(?:different|new|my|an?\s+)",
         r"act\s+as\s+(?:if\s+)?(?:you\s+(?:are|were)\s+)?(?:a\s+)?(?:different|unrestricted|unfiltered)",
         r"pretend\s+(?:you\s+are|to\s+be)\s+(?:a\s+)?(?:different|unrestricted|evil)",
         r"switch\s+to\s+(?:a\s+)?(?:different|new|unrestricted)\s+(?:mode|persona|role)",
         r"enter\s+(?:developer|admin|debug|god|sudo|jailbreak)\s+mode",
-
         # System prompt extraction
         r"(?:show|print|display|reveal|output|repeat|dump)\s+(?:me\s+)?(?:your|the)\s+(?:system\s+)?(?:prompt|instructions|rules|configuration)",
         r"what\s+(?:are|is)\s+your\s+(?:system\s+)?(?:prompt|instructions|rules|initial\s+instructions)",
         r"(?:copy|paste|echo)\s+(?:your|the)\s+(?:system\s+)?(?:prompt|instructions)",
-
         # Delimiter / context escape
         r"<\s*/?\s*(?:system|instructions?|prompt|rules)\s*>",
         r"\[\s*(?:system|INST|instructions?)\s*\]",
         r"```\s*(?:system|prompt|instructions)",
         r"#{3,}\s*(?:system|new\s+instructions|override)",
-
         # Role elevation
         r"i\s+am\s+(?:a|an|the)\s+(?:admin|administrator|developer|root|superuser|system)",
         r"(?:give|grant)\s+(?:me|yourself)\s+(?:admin|root|elevated|full)\s+(?:access|permissions?|privileges?)",
         r"bypass\s+(?:all\s+)?(?:security|authentication|authorization|rbac|permissions?|restrictions?)",
-
         # DAN / known jailbreaks
         r"\bDAN\b",
         r"do\s+anything\s+now",
@@ -74,7 +69,6 @@ def _pattern_check(text: str) -> str | None:
         if match:
             return match.group(0)
     return None
-
 
 
 # ----- Node factory -----

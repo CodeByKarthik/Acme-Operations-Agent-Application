@@ -5,9 +5,10 @@ from typing import List
 
 class AppRole(StrEnum):
     """
-    Enum representing different application 
+    Enum representing different application
     roles for users in the system
     """
+
     SALES_USER = "sales_user"
     SUPPORT_USER = "support_user"
     ADMIN = "admin"
@@ -18,6 +19,7 @@ class CustomerTierEnum(StrEnum):
     Enum representing different customer tiers
     based on their size and revenue.
     """
+
     SMB = "smb"
     MID_MARKET = "mid_market"
     ENTERPRISE = "enterprise"
@@ -28,6 +30,7 @@ class CustomerHealthEnum(StrEnum):
     Enum representing the health status of a customer
     based on various factors such as usage, support.
     """
+
     HEALTHY = "healthy"
     WATCH = "watch"
     AT_RISK = "at_risk"
@@ -36,9 +39,10 @@ class CustomerHealthEnum(StrEnum):
 
 class IssueStatusEnum(StrEnum):
     """
-    Enum representing the status of an issue 
+    Enum representing the status of an issue
     in the system.
     """
+
     OPEN = "open"
     IN_PROGRESS = "in_progress"
     BLOCKED = "blocked"
@@ -51,6 +55,7 @@ class IssuePriorityEnum(StrEnum):
     Enum representing the priority levels of an issue
     to help with resolution.
     """
+
     P1 = "p1"
     P2 = "p2"
     P3 = "p3"
@@ -59,9 +64,10 @@ class IssuePriorityEnum(StrEnum):
 
 class NextActionTypeEnum(StrEnum):
     """
-    Enum representing the types of next actions that can 
+    Enum representing the types of next actions that can
     be taken for an issue or customer interaction.
     """
+
     CUSTOMER_UPDATE = "customer_update"
     TECHNICAL_INVESTIGATION = "technical_investigation"
     WORKAROUND_CONFIRMATION = "workaround_confirmation"
@@ -76,10 +82,12 @@ class NextActionStatusEnum(StrEnum):
     """
     Enum representing the status of a next action item.
     """
+
     OPEN = "open"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
 
 def enum_values(enum_class: type[enum.Enum]) -> List[str]:
     """

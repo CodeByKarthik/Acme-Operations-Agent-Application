@@ -9,5 +9,6 @@ class PermissionDenied(Exception):
     Raised when authorization fails.
     """
 
+
 class AppUserNotFoundError(Exception):
     pass

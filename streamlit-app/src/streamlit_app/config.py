@@ -20,7 +20,6 @@ class Settings(BaseSettings):
     streamlit_port: int = Field(validation_alias="STREAMLIT_PORT")
     keycloak_external_url: str = Field(validation_alias="KEYCLOAK_EXTERNAL_URL")
 
-
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
         env_file_encoding="utf-8",

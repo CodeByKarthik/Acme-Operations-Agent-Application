@@ -12,17 +12,18 @@ class AppUserRepository:
     Repository for performing database operations related
     to application users.
     """
+
     def __init__(self, db: Session) -> None:
         self.db = db
 
     def get_active_user_by_username(self, username: str) -> AppUserDTO:
         """
         Retrieve an active app user by their username.
-        
+
         Attributes:
         -----------
         - username: The username of the app user to retrieve.
-        
+
         Returns:
         --------
         - An AppUserDTO containing the user's details.

@@ -5,8 +5,13 @@ from typing import Any
 
 import redis.asyncio as aioredis
 from acme_ops_shared.utils.logger import get_logger
-from langchain_core.messages import (AIMessage, AnyMessage, HumanMessage,
-                                     SystemMessage, ToolMessage)
+from langchain_core.messages import (
+    AIMessage,
+    AnyMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
+)
 
 logger = get_logger(__name__)
 
@@ -17,7 +22,7 @@ _KEY_PREFIX = "conversation:"
 
 # Message serialization — handles tool_calls, tool_call_id, etc.
 
-_TYPE_MAP = { # type: ignore
+_TYPE_MAP = {  # type: ignore
     "human": HumanMessage,
     "ai": AIMessage,
     "tool": ToolMessage,
@@ -31,7 +36,7 @@ def _serialize_message(msg: AnyMessage) -> dict[str, Any]:
     """
     data: dict[str, Any] = {
         "type": msg.type,
-        "content": msg.content, # type: ignore
+        "content": msg.content,  # type: ignore
     }
 
     if hasattr(msg, "id") and msg.id:
@@ -58,7 +63,7 @@ def _deserialize_message(data: dict[str, Any]) -> AnyMessage:
     """
     msg_type = data.get("type", "human")
 
-    cls = _TYPE_MAP.get(msg_type, HumanMessage) # type: ignore
+    cls = _TYPE_MAP.get(msg_type, HumanMessage)  # type: ignore
 
     kwargs: dict[str, Any] = {"content": data["content"]}
 
@@ -74,10 +79,7 @@ def _deserialize_message(data: dict[str, Any]) -> AnyMessage:
         if data.get("tool_call_id"):
             kwargs["tool_call_id"] = data["tool_call_id"]
 
-    return cls(**kwargs) # type: ignore
-
-
-
+    return cls(**kwargs)  # type: ignore
 
 
 class ConversationMemory:

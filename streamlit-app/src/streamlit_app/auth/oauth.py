@@ -23,7 +23,7 @@ def b64url_decode(data: str) -> bytes:
 
 
 def create_oauth_state() -> str:
-    payload = { # type: ignore[var-annotated]
+    payload = {  # type: ignore[var-annotated]
         "iat": int(time.time()),
         "nonce": secrets.token_urlsafe(24),
     }
