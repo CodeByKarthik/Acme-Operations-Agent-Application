@@ -1,10 +1,10 @@
 from uuid import UUID
 
+from acme_ops_shared.common.enums import IssueStatusEnum, NextActionStatusEnum
+from acme_ops_shared.db.models.business import (Customer, Issue, IssueUpdate,
+                                                NextAction)
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-
-from acme_ops_shared.common.enums import IssueStatusEnum, NextActionStatusEnum
-from acme_ops_shared.db.models.business import Customer, Issue, IssueUpdate, NextAction
 
 
 class BusinessReadRepository:

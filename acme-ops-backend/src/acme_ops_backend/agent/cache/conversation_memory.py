@@ -3,16 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from langchain_core.messages import (
-    AIMessage,
-    AnyMessage,
-    HumanMessage,
-    SystemMessage,
-    ToolMessage,
-)
 import redis.asyncio as aioredis
-
 from acme_ops_shared.utils.logger import get_logger
+from langchain_core.messages import (AIMessage, AnyMessage, HumanMessage,
+                                     SystemMessage, ToolMessage)
 
 logger = get_logger(__name__)
 

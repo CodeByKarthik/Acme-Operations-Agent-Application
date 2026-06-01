@@ -2,15 +2,11 @@ from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
+from acme_ops_shared.common.enums import (CustomerHealthEnum, CustomerTierEnum,
+                                          IssuePriorityEnum, IssueStatusEnum,
+                                          NextActionStatusEnum,
+                                          NextActionTypeEnum)
 from pydantic import BaseModel, Field, field_validator
-from acme_ops_shared.common.enums import (
-    CustomerHealthEnum,
-    CustomerTierEnum,
-    IssuePriorityEnum,
-    IssueStatusEnum,
-    NextActionStatusEnum,
-    NextActionTypeEnum,
-)
 
 
 class CustomerCreate(BaseModel):

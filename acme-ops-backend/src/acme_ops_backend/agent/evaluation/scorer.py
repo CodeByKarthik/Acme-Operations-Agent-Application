@@ -3,18 +3,12 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from langchain_core.messages import (
-    AIMessage,
-    AnyMessage,
-    HumanMessage,
-    SystemMessage,
-    ToolMessage,
-)
-from langchain_openai import ChatOpenAI
-from langsmith import tracing_context  # type: ignore[attr-defined]
-
 from acme_ops_backend.agent.shared.parsing import content_to_text
 from acme_ops_shared.utils.logger import get_logger
+from langchain_core.messages import (AIMessage, AnyMessage, HumanMessage,
+                                     SystemMessage, ToolMessage)
+from langchain_openai import ChatOpenAI
+from langsmith import tracing_context  # type: ignore[attr-defined]
 
 from .prompts import EVALUATION_PROMPT
 from .scores import EvaluationScores

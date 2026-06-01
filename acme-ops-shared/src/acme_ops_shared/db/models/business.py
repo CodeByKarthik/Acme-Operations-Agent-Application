@@ -3,30 +3,16 @@ import uuid
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import (
-    Boolean,
-    DateTime,
-    Enum as SAEnum,
-    ForeignKey,
-    Index,
-    Numeric,
-    String,
-    Text,
-    func,
-)
+from acme_ops_shared.common.enums import (CustomerHealthEnum, CustomerTierEnum,
+                                          IssuePriorityEnum, IssueStatusEnum,
+                                          NextActionStatusEnum,
+                                          NextActionTypeEnum, enum_values)
+from acme_ops_shared.db.base import Base
+from sqlalchemy import Boolean, DateTime
+from sqlalchemy import Enum as SAEnum
+from sqlalchemy import ForeignKey, Index, Numeric, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from acme_ops_shared.db.base import Base
-from acme_ops_shared.common.enums import (
-    enum_values,
-    CustomerTierEnum,
-    CustomerHealthEnum,
-    IssueStatusEnum,
-    IssuePriorityEnum,
-    NextActionTypeEnum,
-    NextActionStatusEnum,
-)
 
 
 class Customer(Base):

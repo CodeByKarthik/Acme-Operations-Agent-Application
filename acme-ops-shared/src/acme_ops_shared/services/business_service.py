@@ -1,15 +1,17 @@
 from datetime import datetime
 from uuid import UUID
 
-from acme_ops_shared.auth.rbac import ADMIN_ROLES, READ_ROLES, WRITE_ROLES, require_role
-from acme_ops_shared.common.enums import (
-    IssueStatusEnum,
-    NextActionStatusEnum,
-    NextActionTypeEnum,
-)
-from acme_ops_shared.db.models.business import Customer, Issue, IssueUpdate, NextAction
-from acme_ops_shared.db.repositories.business_read_repository import BusinessReadRepository
-from acme_ops_shared.db.repositories.business_write_repository import BusinessWriteRepository
+from acme_ops_shared.auth.rbac import (ADMIN_ROLES, READ_ROLES, WRITE_ROLES,
+                                       require_role)
+from acme_ops_shared.common.enums import (IssueStatusEnum,
+                                          NextActionStatusEnum,
+                                          NextActionTypeEnum)
+from acme_ops_shared.db.models.business import (Customer, Issue, IssueUpdate,
+                                                NextAction)
+from acme_ops_shared.db.repositories.business_read_repository import \
+    BusinessReadRepository
+from acme_ops_shared.db.repositories.business_write_repository import \
+    BusinessWriteRepository
 from acme_ops_shared.schema.auth_schema import AuthContext
 
 

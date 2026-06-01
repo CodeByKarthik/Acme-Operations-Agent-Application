@@ -4,15 +4,13 @@ from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
-from langchain_core.messages import AIMessage, AnyMessage, HumanMessage, ToolMessage
-from acme_ops_backend.agent.cache import (
-    ConversationMemory,
-    ToolResultCache,
-    get_redis,
-)
+from acme_ops_backend.agent.cache import (ConversationMemory, ToolResultCache,
+                                          get_redis)
 from acme_ops_backend.config import settings
 from acme_ops_shared.schema.auth_schema import AuthContext
 from acme_ops_shared.utils.logger import get_logger
+from langchain_core.messages import (AIMessage, AnyMessage, HumanMessage,
+                                     ToolMessage)
 
 from .graph_builder import build_graph
 from .mcp_client import connect_mcp

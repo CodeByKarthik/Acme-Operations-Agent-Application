@@ -4,20 +4,12 @@ from typing import Any
 from fastmcp import FastMCP
 from mcp.types import ToolAnnotations
 
-
-from .business_tools import (
-    list_customers,
-    get_customer_by_name,
-    list_open_issues,
-    get_issue_by_external_ref,
-    list_issue_updates,
-    list_next_actions,
-    update_issue_status,
-    add_issue_update,
-    create_next_action,
-    update_next_action,
-    complete_next_action,
-)
+from .business_tools import (add_issue_update, complete_next_action,
+                             create_next_action, get_customer_by_name,
+                             get_issue_by_external_ref, list_customers,
+                             list_issue_updates, list_next_actions,
+                             list_open_issues, update_issue_status,
+                             update_next_action)
 
 # ----- Define tool metadata (function, annotations) ------
 

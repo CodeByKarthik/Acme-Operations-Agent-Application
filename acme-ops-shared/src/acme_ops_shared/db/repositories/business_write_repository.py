@@ -1,14 +1,11 @@
 from datetime import UTC, datetime
 from uuid import UUID
 
-from sqlalchemy.orm import Session
-
-from acme_ops_shared.common.enums import (
-    IssueStatusEnum,
-    NextActionStatusEnum,
-    NextActionTypeEnum,
-)
+from acme_ops_shared.common.enums import (IssueStatusEnum,
+                                          NextActionStatusEnum,
+                                          NextActionTypeEnum)
 from acme_ops_shared.db.models.business import Issue, IssueUpdate, NextAction
+from sqlalchemy.orm import Session
 
 
 class BusinessWriteRepository:

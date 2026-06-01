@@ -1,11 +1,9 @@
-from fastapi import FastAPI
-
+from acme_ops_backend.api.middleware.middleware import ObservabilityMiddleware
+from acme_ops_backend.api.middleware.observability import configure_logging
 from acme_ops_backend.api.routes.chat import router as chat_router
 from acme_ops_backend.api.routes.health import router as health_router
 from acme_ops_backend.api.routes.me import router as me_router
-
-from acme_ops_backend.api.middleware.observability import configure_logging
-from acme_ops_backend.api.middleware.middleware import ObservabilityMiddleware
+from fastapi import FastAPI
 
 
 def create_app() -> FastAPI:

@@ -2,6 +2,7 @@ import enum
 from enum import StrEnum
 from typing import List
 
+
 class AppRole(StrEnum):
     """
     Enum representing different application 

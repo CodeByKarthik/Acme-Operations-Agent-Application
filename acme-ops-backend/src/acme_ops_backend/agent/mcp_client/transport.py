@@ -5,10 +5,10 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import httpx
+from acme_ops_shared.utils.logger import get_logger
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
-from acme_ops_shared.utils.logger import get_logger
 from .client_connection import MCPConnection
 
 logger = get_logger(__name__)

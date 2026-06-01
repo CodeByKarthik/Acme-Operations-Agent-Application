@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
+from acme_ops_backend.agent.shared.state import AgentState
 from langchain_core.runnables import RunnableConfig
 from langgraph.prebuilt import ToolNode
-
-from acme_ops_backend.agent.shared.state import AgentState
 
 
 def create_tool_node(tool_executor: ToolNode) -> Any:

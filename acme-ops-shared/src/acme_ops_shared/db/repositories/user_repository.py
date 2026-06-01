@@ -1,11 +1,10 @@
 from uuid import UUID
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
+from acme_ops_shared.common.exceptions import AppUserNotFoundError
 from acme_ops_shared.db.models import AppRole, AppUser
 from acme_ops_shared.schema.auth_schema import AppUserDTO
-from acme_ops_shared.common.exceptions import AppUserNotFoundError
-
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 class AppUserRepository:

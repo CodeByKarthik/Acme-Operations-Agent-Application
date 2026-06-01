@@ -3,11 +3,10 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass
 
-from langchain_core.messages import SystemMessage
-from langchain_openai import ChatOpenAI
-
 from acme_ops_backend.agent.prompts.skills import DATA_FALLBACK_RESPONSE_PROMPT
 from acme_ops_backend.agent.shared.parsing import content_to_text
+from langchain_core.messages import SystemMessage
+from langchain_openai import ChatOpenAI
 
 
 @dataclass(frozen=True)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import redis.asyncio as aioredis
-
 from acme_ops_backend.config import settings
 from acme_ops_shared.utils.logger import get_logger
 

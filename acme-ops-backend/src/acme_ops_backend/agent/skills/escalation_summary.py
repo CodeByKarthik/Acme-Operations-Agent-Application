@@ -2,24 +2,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
-
 from acme_ops_backend.agent.mcp_client import MCPConnection, safe_json_parse
 from acme_ops_backend.agent.prompts.skills import (
-    CUSTOMER_NAME_EXTRACTION_PROMPT,
-    ESCALATION_SUMMARY_PROMPT,
-)
+    CUSTOMER_NAME_EXTRACTION_PROMPT, ESCALATION_SUMMARY_PROMPT)
 from acme_ops_backend.agent.shared.fallback_response import (
-    DataFallbackContext,
-    build_data_fallback_response,
-)
-from acme_ops_backend.agent.shared.parsing import (
-    content_to_text,
-    parse_issue_list,
-)
-from acme_ops_backend.agent.shared.skill_limits import DEFAULT_SKILL_LIMITS, SkillLimits
+    DataFallbackContext, build_data_fallback_response)
+from acme_ops_backend.agent.shared.parsing import (content_to_text,
+                                                   parse_issue_list)
+from acme_ops_backend.agent.shared.skill_limits import (DEFAULT_SKILL_LIMITS,
+                                                        SkillLimits)
 from acme_ops_shared.utils.logger import get_logger
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_openai import ChatOpenAI
 
 logger = get_logger(__name__)
 

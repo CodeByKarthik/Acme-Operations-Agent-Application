@@ -1,13 +1,13 @@
-from typing import Any
 import json
+from typing import Any
 
 import jwt
 from jwt import PyJWKClient
 from pydantic import ValidationError
 
 from ..common.exceptions import AuthError
-from ..schema.auth_schema import AuthenticatedUser, KeycloakTokenPayload
 from ..config import settings
+from ..schema.auth_schema import AuthenticatedUser, KeycloakTokenPayload
 
 
 class KeycloakTokenVerifier:

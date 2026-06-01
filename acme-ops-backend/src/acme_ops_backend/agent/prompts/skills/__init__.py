@@ -1,7 +1,5 @@
-from .escalation_summary import (
-    CUSTOMER_NAME_EXTRACTION_PROMPT,
-    ESCALATION_SUMMARY_PROMPT,
-)
+from .escalation_summary import (CUSTOMER_NAME_EXTRACTION_PROMPT,
+                                 ESCALATION_SUMMARY_PROMPT)
 from .fallback_response import DATA_FALLBACK_RESPONSE_PROMPT
 
 __all__ = [

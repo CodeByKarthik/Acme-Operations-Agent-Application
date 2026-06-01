@@ -1,21 +1,17 @@
-from uuid import UUID
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from uuid import UUID
 
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
-from acme_ops_shared.common.enums import (
-    CustomerHealthEnum,
-    CustomerTierEnum,
-    IssuePriorityEnum,
-    IssueStatusEnum,
-    NextActionStatusEnum,
-    NextActionTypeEnum,
-)
-from acme_ops_shared.db.models.business import Customer, Issue, IssueUpdate, NextAction
+from acme_ops_shared.common.enums import (CustomerHealthEnum, CustomerTierEnum,
+                                          IssuePriorityEnum, IssueStatusEnum,
+                                          NextActionStatusEnum,
+                                          NextActionTypeEnum)
+from acme_ops_shared.db.models.business import (Customer, Issue, IssueUpdate,
+                                                NextAction)
 from acme_ops_shared.db.models.user import AppUser
 from acme_ops_shared.db.session import SessionLocal
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 
 def get_user_by_username(session: Session, username: str) -> AppUser:

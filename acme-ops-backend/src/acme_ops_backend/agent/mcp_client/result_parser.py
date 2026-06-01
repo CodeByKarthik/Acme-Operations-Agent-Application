@@ -3,9 +3,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from mcp.types import TextContent
-
 from acme_ops_shared.utils.logger import get_logger
+from mcp.types import TextContent
 
 logger = get_logger(__name__)
 

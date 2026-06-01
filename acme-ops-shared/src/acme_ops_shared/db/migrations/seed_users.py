@@ -3,7 +3,6 @@ from sqlalchemy import select
 from ..models import AppRole, AppUser
 from ..session import SessionLocal
 
-
 ROLES = [
     ("sales_user", "Read-only access to customer and issue data"),
     ("support_user", "Read and update access for support issues"),

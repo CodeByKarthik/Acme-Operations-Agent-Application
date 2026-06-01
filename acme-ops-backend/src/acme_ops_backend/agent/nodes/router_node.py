@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_core.runnables import RunnableConfig
-from langchain_openai import ChatOpenAI
-
 from acme_ops_backend.agent.graph.routing import DEFAULT_ROUTE, VALID_ROUTES
 from acme_ops_backend.agent.prompts import ROUTER_PROMPT
 from acme_ops_backend.agent.shared.parsing import content_to_text
 from acme_ops_backend.agent.shared.state import AgentState
 from acme_ops_shared.utils.logger import get_logger
+from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.runnables import RunnableConfig
+from langchain_openai import ChatOpenAI
 
 logger = get_logger(__name__)
 

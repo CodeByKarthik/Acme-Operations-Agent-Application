@@ -1,13 +1,11 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
 from acme_ops_shared.config import settings
+from acme_ops_shared.db import \
+    models  # noqa: F401  # pyright: ignore[reportUnusedImport]
 from acme_ops_shared.db.base import Base
-from acme_ops_shared.db import models   # noqa: F401  # pyright: ignore[reportUnusedImport]
-
+from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
