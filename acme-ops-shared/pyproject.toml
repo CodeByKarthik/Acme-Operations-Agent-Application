@@ -1,7 +1,7 @@
 [project]
-name = "acme-ops-agent"
+name = "acme-ops-shared"
 version = "0.1.0"
-description = "Agentic assistant for Acme Operations"
+description = "Shared package for Acme Operations (db, auth, schema, services)"
 readme = "README.md"
 authors = [
     { name = "Karthikeyan Sivakumar", email = "126179797+Karthi-DStech@users.noreply.github.com" }
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-acme-ops-agent = "acme_ops_agent:main"
+acme-ops-shared = "acme_ops_shared:main"
 
 [build-system]
 requires = ["uv_build>=0.11.16,<0.12.0"]

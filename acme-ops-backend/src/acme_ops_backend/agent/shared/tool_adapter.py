@@ -3,7 +3,7 @@ from typing import Any, Optional, Type, cast
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field, create_model
 
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 from ..mcp_client import MCPConnection
 

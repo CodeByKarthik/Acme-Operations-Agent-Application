@@ -6,19 +6,19 @@ from fastmcp.dependencies import Depends
 from fastmcp.exceptions import ToolError
 from pydantic import Field
 
-from acme_ops_agent.common.enums import (
+from acme_ops_shared.common.enums import (
     IssueStatusEnum,
     NextActionStatusEnum,
     NextActionTypeEnum,
 )
 from acme_ops_mcp.mcp.dependencies import get_business_service
-from acme_ops_agent.schema.business_schema import (
+from acme_ops_shared.schema.business_schema import (
     CustomerRead,
     IssueRead,
     IssueUpdateRead,
     NextActionRead,
 )
-from acme_ops_agent.services.business_service import BusinessService
+from acme_ops_shared.services.business_service import BusinessService
 
 
 async def list_customers(

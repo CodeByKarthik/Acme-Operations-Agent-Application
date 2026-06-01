@@ -1,8 +1,8 @@
-from acme_ops_agent.common.exceptions import AuthError, PermissionDenied, AppUserNotFoundError
-from acme_ops_agent.auth.keycloak import KeycloakTokenVerifier
-from acme_ops_agent.db.repositories.user_repository import AppUserRepository
-from acme_ops_agent.schema.auth_schema import AuthContext
-from acme_ops_agent.common.enums import AppRole
+from acme_ops_shared.common.exceptions import AuthError, PermissionDenied, AppUserNotFoundError
+from acme_ops_shared.auth.keycloak import KeycloakTokenVerifier
+from acme_ops_shared.db.repositories.user_repository import AppUserRepository
+from acme_ops_shared.schema.auth_schema import AuthContext
+from acme_ops_shared.common.enums import AppRole
 
 
 class AuthContextService:

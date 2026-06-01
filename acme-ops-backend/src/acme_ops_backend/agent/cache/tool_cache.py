@@ -6,7 +6,7 @@ from typing import Any
 
 import redis.asyncio as aioredis
 
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

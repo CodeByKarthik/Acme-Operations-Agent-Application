@@ -27,8 +27,8 @@ echo "Running Alembic schema migrations..."
 alembic upgrade head
 
 echo "Running database seed scripts..."
-python -m acme_ops_agent.db.migrations.seed_users
-python -m acme_ops_agent.db.migrations.seed_business_data
+python -m acme_ops_shared.db.migrations.seed_users
+python -m acme_ops_shared.db.migrations.seed_business_data
 
 # ----- Add New Migrations Here -----
 

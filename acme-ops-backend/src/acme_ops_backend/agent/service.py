@@ -11,8 +11,8 @@ from acme_ops_backend.agent.cache import (
     get_redis,
 )
 from acme_ops_backend.config import settings
-from acme_ops_agent.schema.auth_schema import AuthContext
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.schema.auth_schema import AuthContext
+from acme_ops_shared.utils.logger import get_logger
 
 from .graph_builder import build_graph
 from .mcp_client import connect_mcp

@@ -1,11 +1,11 @@
-from acme_ops_agent.db.models.user import AppRole, AppUser
-from acme_ops_agent.db.models.business import (
+from acme_ops_shared.db.models.user import AppRole, AppUser
+from acme_ops_shared.db.models.business import (
     Customer,
     Issue,
     IssueUpdate,
     NextAction,
 )
-from acme_ops_agent.common.enums import (
+from acme_ops_shared.common.enums import (
     CustomerHealthEnum,
     CustomerTierEnum,
     IssuePriorityEnum,

@@ -61,7 +61,7 @@ services:
 
   db-init:
     build:
-      context: ./acme-ops-agent
+      context: ./acme-ops-shared
     container_name: acme_ops_db_init
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}

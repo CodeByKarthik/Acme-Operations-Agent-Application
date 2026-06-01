@@ -3,12 +3,12 @@ from collections.abc import Iterator
 from fastapi import Depends, Header, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from acme_ops_agent.auth.keycloak import KeycloakTokenVerifier
-from acme_ops_agent.common.exceptions import AuthError, PermissionDenied
-from acme_ops_agent.db.repositories.user_repository import AppUserRepository
-from acme_ops_agent.db.session import SessionLocal
-from acme_ops_agent.schema.auth_schema import AuthContext
-from acme_ops_agent.services.auth_context_service import AuthContextService
+from acme_ops_shared.auth.keycloak import KeycloakTokenVerifier
+from acme_ops_shared.common.exceptions import AuthError, PermissionDenied
+from acme_ops_shared.db.repositories.user_repository import AppUserRepository
+from acme_ops_shared.db.session import SessionLocal
+from acme_ops_shared.schema.auth_schema import AuthContext
+from acme_ops_shared.services.auth_context_service import AuthContextService
 
 
 def get_db_session() -> Iterator[Session]:

@@ -3,12 +3,12 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from acme_ops_agent.common.enums import (
+from acme_ops_shared.common.enums import (
     IssueStatusEnum,
     NextActionStatusEnum,
     NextActionTypeEnum,
 )
-from acme_ops_agent.db.models.business import Issue, IssueUpdate, NextAction
+from acme_ops_shared.db.models.business import Issue, IssueUpdate, NextAction
 
 
 class BusinessWriteRepository:

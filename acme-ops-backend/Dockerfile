@@ -2,8 +2,8 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
 WORKDIR /app
 
-# Copy shared dependency (acme-ops-agent)
-COPY acme-ops-agent ./acme-ops-agent
+# Copy shared dependency (acme-ops-shared)
+COPY acme-ops-shared ./acme-ops-shared
 
 # Copy backend package
 COPY acme-ops-backend/pyproject.toml acme-ops-backend/uv.lock acme-ops-backend/README.md ./acme-ops-backend/

@@ -17,8 +17,8 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from acme_ops_agent.db.base import Base
-from acme_ops_agent.common.enums import (
+from acme_ops_shared.db.base import Base
+from acme_ops_shared.common.enums import (
     enum_values,
     CustomerTierEnum,
     CustomerHealthEnum,

@@ -4,14 +4,14 @@ from contextlib import asynccontextmanager
 from fastmcp.dependencies import CurrentHeaders
 from fastmcp.exceptions import ToolError
 
-from acme_ops_agent.auth.keycloak import KeycloakTokenVerifier
-from acme_ops_agent.common.exceptions import AuthError, PermissionDenied
-from acme_ops_agent.db.repositories.business_read_repository import BusinessReadRepository
-from acme_ops_agent.db.repositories.business_write_repository import BusinessWriteRepository
-from acme_ops_agent.db.repositories.user_repository import AppUserRepository
-from acme_ops_agent.db.session import SessionLocal
-from acme_ops_agent.services.auth_context_service import AuthContextService
-from acme_ops_agent.services.business_service import BusinessService
+from acme_ops_shared.auth.keycloak import KeycloakTokenVerifier
+from acme_ops_shared.common.exceptions import AuthError, PermissionDenied
+from acme_ops_shared.db.repositories.business_read_repository import BusinessReadRepository
+from acme_ops_shared.db.repositories.business_write_repository import BusinessWriteRepository
+from acme_ops_shared.db.repositories.user_repository import AppUserRepository
+from acme_ops_shared.db.session import SessionLocal
+from acme_ops_shared.services.auth_context_service import AuthContextService
+from acme_ops_shared.services.business_service import BusinessService
 
 
 def extract_bearer_token(headers: dict[str, str]) -> str:

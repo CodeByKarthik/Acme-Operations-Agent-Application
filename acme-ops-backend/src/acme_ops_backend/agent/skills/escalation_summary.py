@@ -19,7 +19,7 @@ from acme_ops_backend.agent.shared.parsing import (
     parse_issue_list,
 )
 from acme_ops_backend.agent.shared.skill_limits import DEFAULT_SKILL_LIMITS, SkillLimits
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from acme_ops_agent.common.enums import AppRole
+from acme_ops_shared.common.enums import AppRole
 
 
 class RealmAccess(BaseModel):

@@ -1,6 +1,6 @@
-from acme_ops_agent.common.enums import AppRole
+from acme_ops_shared.common.enums import AppRole
 from ..common.exceptions import PermissionDenied
-from acme_ops_agent.schema.auth_schema import AuthContext
+from acme_ops_shared.schema.auth_schema import AuthContext
 
 
 READ_ROLES = {

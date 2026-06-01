@@ -6,8 +6,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, Header
 from acme_ops_backend.agent.evaluation import run_background_evaluation
 from acme_ops_backend.agent.service import AgentService
 from acme_ops_backend.api.auth import extract_bearer_token, get_auth_context
-from acme_ops_agent.schema.auth_schema import AuthContext
-from acme_ops_agent.schema.chat_schema import ChatRequest, ChatResponse
+from acme_ops_shared.schema.auth_schema import AuthContext
+from acme_ops_shared.schema.chat_schema import ChatRequest, ChatResponse
 
 router = APIRouter(prefix="/api", tags=["chat"])
 

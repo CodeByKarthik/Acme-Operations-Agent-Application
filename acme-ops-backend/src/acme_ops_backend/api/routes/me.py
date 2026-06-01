@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from acme_ops_backend.api.auth import get_auth_context
-from acme_ops_agent.schema.auth_schema import AuthContext
+from acme_ops_shared.schema.auth_schema import AuthContext
 
 router = APIRouter(tags=["auth"])
 

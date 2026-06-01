@@ -5,7 +5,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
 from acme_ops_backend.config import settings
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 from .langsmith_feedback import log_evaluation_to_langsmith
 from .scorer import score_response

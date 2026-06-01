@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from langsmith import Client
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 from .scores import EvaluationScores
 
 logger = get_logger(__name__)

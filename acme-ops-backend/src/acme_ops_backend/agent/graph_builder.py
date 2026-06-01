@@ -9,7 +9,7 @@ from langgraph.prebuilt import ToolNode
 from pydantic import SecretStr
 
 from acme_ops_backend.config import settings
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 from .graph.conditions import route_after_router, should_continue, route_after_guardrail
 from .graph.registry import build_skill_nodes

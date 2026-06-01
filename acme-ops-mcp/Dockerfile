@@ -5,7 +5,7 @@ WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
-COPY acme-ops-agent ./acme-ops-agent
+COPY acme-ops-shared ./acme-ops-shared
 COPY acme-ops-mcp/pyproject.toml acme-ops-mcp/uv.lock acme-ops-mcp/README.md ./acme-ops-mcp/
 COPY acme-ops-mcp/src ./acme-ops-mcp/src
 
@@ -22,6 +22,6 @@ ENV PATH="/app/acme-ops-mcp/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 
 COPY --from=builder /app/acme-ops-mcp /app/acme-ops-mcp
-COPY --from=builder /app/acme-ops-agent /app/acme-ops-agent
+COPY --from=builder /app/acme-ops-shared /app/acme-ops-shared
 
 CMD ["python", "-m", "acme_ops_mcp.mcp.server"]

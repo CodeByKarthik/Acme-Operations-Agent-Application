@@ -10,7 +10,7 @@ from langchain_openai import ChatOpenAI
 from acme_ops_backend.agent.prompts.guardrails import INPUT_GUARDRAIL_PROMPT
 from acme_ops_backend.agent.shared.parsing import content_to_text
 from acme_ops_backend.agent.shared.state import AgentState
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

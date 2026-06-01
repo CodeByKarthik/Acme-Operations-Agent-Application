@@ -5,7 +5,7 @@ from typing import Any
 
 from mcp.types import TextContent
 
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

@@ -10,7 +10,7 @@ from acme_ops_backend.agent.graph.conditions import MAX_TOOL_CALLS
 from acme_ops_backend.agent.prompts import SYSTEM_PROMPT, TOOL_LIMIT_MESSAGE
 from acme_ops_backend.agent.shared.memory import trim_to_turns
 from acme_ops_backend.agent.shared.state import AgentState
-from acme_ops_agent.utils.logger import get_logger
+from acme_ops_shared.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

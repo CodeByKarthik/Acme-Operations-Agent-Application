@@ -10,11 +10,11 @@ requires-python = ">=3.13"
 dependencies = [
     "fastmcp>=3.3.1",
     "mcp>=1.27.1",
-    "acme-ops-agent"
+    "acme-ops-shared"
 ]
 
 [tool.uv.sources]
-acme-ops-agent = { path = "../acme-ops-agent", editable = true }
+acme-ops-shared = { path = "../acme-ops-shared", editable = true }
 
 [project.scripts]
 acme-ops-mcp = "acme_ops_mcp:main"
