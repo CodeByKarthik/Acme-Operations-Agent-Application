@@ -1,7 +1,7 @@
 from pathlib import Path
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
 
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_FILE = PROJECT_ROOT / ".env"
@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     streamlit_host: str = Field(validation_alias="STREAMLIT_HOST")
     streamlit_port: int = Field(validation_alias="STREAMLIT_PORT")
     keycloak_external_url: str = Field(validation_alias="KEYCLOAK_EXTERNAL_URL")
-
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,

@@ -1,7 +1,8 @@
 services:
   backend:
     build:
-      context: ./acme-ops-agent
+      context: .
+      dockerfile: acme-ops-backend/Dockerfile
     container_name: backend_acme_ops
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
@@ -60,7 +61,7 @@ services:
 
   db-init:
     build:
-      context: ./acme-ops-agent
+      context: ./acme-ops-shared
     container_name: acme_ops_db_init
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
@@ -70,18 +71,6 @@ services:
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_JWT_ALGORITHM: ${KEYCLOAK_JWT_ALGORITHM}
-      MCP_HOST: ${MCP_HOST}
-      MCP_PORT: ${MCP_PORT}
-      API_HOST: ${API_HOST}
-      API_PORT: ${API_PORT}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      LLM_MODEL: ${LLM_MODEL}
-      LANGSMITH_TRACING: ${LANGSMITH_TRACING}
-      LANGSMITH_ENDPOINT: ${LANGSMITH_ENDPOINT}
-      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY}
-      LANGSMITH_PROJECT: ${LANGSMITH_PROJECT}
-      APP_VERSION: ${APP_VERSION}
-      REDIS_URL: ${REDIS_URL}
     depends_on:
       postgres:
         condition: service_healthy
@@ -138,9 +127,10 @@ services:
 
   mcp:
     build:
-      context: ./acme-ops-agent
+      context: .
+      dockerfile: acme-ops-mcp/Dockerfile
     container_name: mcp_acme_ops
-    command: ["python", "-m", "acme_ops_agent.mcp.server"]
+    command: ["python", "-m", "acme_ops_mcp.mcp.server"]
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
@@ -149,18 +139,6 @@ services:
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
       KEYCLOAK_JWT_ALGORITHM: ${KEYCLOAK_JWT_ALGORITHM}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      LLM_MODEL: ${LLM_MODEL}
-      LANGSMITH_TRACING: ${LANGSMITH_TRACING}
-      LANGSMITH_ENDPOINT: ${LANGSMITH_ENDPOINT}
-      LANGSMITH_API_KEY: ${LANGSMITH_API_KEY}
-      LANGSMITH_PROJECT: ${LANGSMITH_PROJECT}
-      APP_VERSION: ${APP_VERSION}
-      MCP_HOST: 0.0.0.0
-      MCP_PORT: ${MCP_PORT}
-      API_HOST: ${API_HOST}
-      API_PORT: ${API_PORT}
-      REDIS_URL: ${REDIS_URL}
     depends_on:
       postgres:
         condition: service_healthy

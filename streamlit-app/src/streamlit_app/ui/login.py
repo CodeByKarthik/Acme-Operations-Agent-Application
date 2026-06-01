@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import streamlit as st
-
 from streamlit_app.auth.session import get_auth_url
 
 

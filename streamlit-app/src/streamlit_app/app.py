@@ -1,12 +1,7 @@
 from __future__ import annotations
 
 import streamlit as st
-
-from streamlit_app.auth.session import (
-    ensure_valid_token,
-    handle_auth_callback,
-    logout,
-)
+from streamlit_app.auth.session import ensure_valid_token, handle_auth_callback, logout
 from streamlit_app.ui.assistant import render_assistant
 from streamlit_app.ui.login import render_login
 

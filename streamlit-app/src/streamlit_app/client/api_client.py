@@ -6,7 +6,6 @@ from typing import Any
 
 import requests
 import streamlit as st
-
 from streamlit_app.auth.session import ensure_valid_token
 from streamlit_app.config import settings  # type: ignore[import-untyped]
 from streamlit_app.utils.logger import get_logger
