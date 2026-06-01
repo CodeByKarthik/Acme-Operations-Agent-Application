@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
@@ -22,6 +24,12 @@ from acme_ops_agent.utils.logger import get_logger
 logger = get_logger(__name__)
 
 
+@dataclass
+class SkillResult:
+    answer: str
+    raw_data: str = field(default="")
+
+
 class EscalationSummarySkill:
     """
     Orchestrates a full customer escalation summary.
@@ -42,7 +50,7 @@ class EscalationSummarySkill:
         self._limits = limits
         self._mcp_call_count = 0
 
-    async def execute(self, user_message: str) -> str:
+    async def execute(self, user_message: str) -> SkillResult:
         """
         Run the full escalation summary workflow.
 
@@ -229,21 +237,28 @@ class EscalationSummarySkill:
             actions_data="\n\n".join(actions_sections) or "No pending actions.",
         )
 
+        raw_data = "\n\n".join([
+            f"[customer]\n{customer_raw}",
+            f"[issues]\n{issues_raw}",
+            f"[updates]\n{chr(10).join(updates_sections) or 'No updates found.'}",
+            f"[actions]\n{chr(10).join(actions_sections) or 'No pending actions.'}",
+        ])
         logger.info("Escalation Summary Skill completed")
-        return summary + truncation_note
+        return SkillResult(answer=summary + truncation_note, raw_data=raw_data)
 
     async def _build_fallback_response(
         self,
         *,
         user_message: str,
         context: DataFallbackContext,
-    ) -> str:
+    ) -> SkillResult:
         """Delegate fallback user messaging to the LLM using structured context."""
-        return await build_data_fallback_response(
+        answer = await build_data_fallback_response(
             self._llm,
             user_message=user_message,
             context=context,
         )
+        return SkillResult(answer=answer)
 
     async def _guarded_mcp_call(
         self,
