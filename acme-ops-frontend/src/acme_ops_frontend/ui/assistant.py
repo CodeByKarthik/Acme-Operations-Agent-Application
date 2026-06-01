@@ -9,9 +9,9 @@ persists in st.session_state for the duration of the session.
 from __future__ import annotations
 
 import streamlit as st
-from streamlit_app.auth.session import get_logged_in_user, logout
-from streamlit_app.client.api_client import call_agent_api
-from streamlit_app.utils.logger import get_logger
+from acme_ops_frontend.auth.session import get_logged_in_user, logout
+from acme_ops_frontend.client.api_client import call_agent_api
+from acme_ops_frontend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

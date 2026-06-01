@@ -1,5 +1,5 @@
 [project]
-name = "streamlit-app"
+name = "acme-ops-frontend"
 version = "0.1.0"
 description = "Frontend application for Acme Ops Agent Application"
 readme = "README.md"
@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [project.scripts]
-streamlit-app = "streamlit_app:main"
+acme-ops-frontend = "acme_ops_frontend:main"
 
 [build-system]
 requires = ["uv_build>=0.11.16,<0.12.0"]

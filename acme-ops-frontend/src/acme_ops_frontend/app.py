@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import streamlit as st
-from streamlit_app.auth.session import ensure_valid_token, handle_auth_callback, logout
-from streamlit_app.ui.assistant import render_assistant
-from streamlit_app.ui.login import render_login
+from acme_ops_frontend.auth.session import ensure_valid_token, handle_auth_callback, logout
+from acme_ops_frontend.ui.assistant import render_assistant
+from acme_ops_frontend.ui.login import render_login
 
 
 def main() -> None:

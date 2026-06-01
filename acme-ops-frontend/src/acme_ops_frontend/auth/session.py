@@ -8,9 +8,9 @@ from urllib.parse import urlencode
 
 import requests
 import streamlit as st
-from streamlit_app.auth.oauth import create_oauth_state, validate_oauth_state
-from streamlit_app.config import settings  # type: ignore[import-untyped]
-from streamlit_app.utils.logger import get_logger
+from acme_ops_frontend.auth.oauth import create_oauth_state, validate_oauth_state
+from acme_ops_frontend.config import settings  # type: ignore[import-untyped]
+from acme_ops_frontend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
