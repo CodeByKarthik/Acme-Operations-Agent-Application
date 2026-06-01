@@ -1,7 +1,8 @@
 services:
   backend:
     build:
-      context: ./acme-ops-agent
+      context: .
+      dockerfile: acme-ops-backend/Dockerfile
     container_name: backend_acme_ops
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
@@ -138,9 +139,10 @@ services:
 
   mcp:
     build:
-      context: ./acme-ops-agent
+      context: .
+      dockerfile: acme-ops-mcp/Dockerfile
     container_name: mcp_acme_ops
-    command: ["python", "-m", "acme_ops_agent.mcp.server"]
+    command: ["python", "-m", "acme_ops_mcp.mcp.server"]
     environment:
       DATABASE_URL: ${DATABASE_URL_DOCKER}
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER}
