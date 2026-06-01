@@ -103,7 +103,7 @@ services:
         condition: service_healthy
 
   streamlit:
-    build: ./streamlit-app
+    build: ./acme-ops-frontend
     container_name: frontend_acme_ops
     ports:
       - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"

@@ -12,4 +12,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH="/app/src"
 
 
-CMD ["sh", "-c", "streamlit run src/streamlit_app/app.py --server.port=${STREAMLIT_PORT} --server.address=${STREAMLIT_HOST}"]
+CMD ["sh", "-c", "streamlit run src/acme_ops_frontend/app.py --server.port=${STREAMLIT_PORT} --server.address=${STREAMLIT_HOST}"]

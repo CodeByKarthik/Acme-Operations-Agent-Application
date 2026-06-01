@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import streamlit as st
-from streamlit_app.auth.session import get_auth_url
+from acme_ops_frontend.auth.session import get_auth_url
 
 
 def render_login() -> None:

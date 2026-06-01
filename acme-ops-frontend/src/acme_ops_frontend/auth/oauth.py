@@ -7,7 +7,7 @@ import json
 import secrets
 import time
 
-from streamlit_app.config import settings  # type: ignore[import-untyped]
+from acme_ops_frontend.config import settings  # type: ignore[import-untyped]
 
 CLIENT_SECRET = settings.keycloak_client_secret
 OAUTH_STATE_MAX_AGE_SECONDS = 300
