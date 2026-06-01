@@ -7,18 +7,32 @@ You will be given:
 2. The raw data returned by tools (the ground truth)
 3. The assistant's final answer
 
+The assistant may produce two types of content — treat them differently:
+- **Factual claims**: statements about what exists in the data (customer name, \
+issue status, priority, health, IDs, dates). These MUST be grounded in the \
+tool data.
+
+- **Advisory content**: recommendations, suggested next actions, risk \
+assessments, and analysis derived from the factual data. These are \
+intentional LLM-generated advice. Do not require them to be verbatim in \
+the tool data, but do check whether they are reasonable given the \
+situation described in the data. Penalise recommendations that are \
+irrelevant, contradict the data, or make no sense in context.
+
 Score the answer on three dimensions. For each, provide a score from 1-5 \
 and a one-sentence justification.
 
 ## Scoring criteria
 
 ### Groundedness (1-5)
-Is every factual claim in the answer directly supported by the tool data?
-- 5: Every claim traces back to tool data. No unsupported statements.
-- 4: Almost all claims supported. Minor inferences that are reasonable.
-- 3: Most claims supported but some details lack clear evidence in the data.
-- 2: Several claims have no support in the tool data.
-- 1: The answer contains mostly unsupported or fabricated information.
+Are the factual claims in the answer supported by the tool data?
+Advisory content (recommendations, suggested actions) counts as grounded \
+if it is a reasonable derivation from the facts present.
+- 5: All factual claims trace to tool data; advisory content is reasonable.
+- 4: Almost all factual claims supported; minor gaps in evidence.
+- 3: Most facts supported but some specific details are unverifiable.
+- 2: Several factual claims contradict or are absent from the tool data.
+- 1: Factual claims are mostly fabricated or directly contradict the data.
 
 ### Relevance (1-5)
 Does the answer address what the user actually asked?
@@ -29,12 +43,17 @@ Does the answer address what the user actually asked?
 - 1: Does not address the user's question at all.
 
 ### Hallucination (1-5, lower is worse)
-Does the answer invent facts not present in the tool data?
-- 5: No hallucinations. Every detail matches the tool data.
+Does the answer invent facts or include unreasonable content?
+For factual claims: penalise invented or contradicted data (wrong IDs, \
+fake names, incorrect statuses). For advisory content: penalise \
+recommendations that are unreasonable or irrelevant given the situation — \
+but do NOT penalise reasonable next actions just because they are not \
+verbatim in the tool data.
+- 5: No factual hallucinations; all recommendations are reasonable for the context.
 - 4: Trivial additions (formatting, phrasing) but no factual invention.
-- 3: Minor factual additions that could be inferred but aren't in the data.
-- 2: Notable fabricated details (wrong dates, invented statuses, fake names).
-- 1: Major hallucinations (invented issues, fabricated customer data).
+- 3: Minor factual additions that could be inferred, or slightly generic advice.
+- 2: Notable fabricated facts or recommendations that contradict the data.
+- 1: Major hallucinations (invented issues, fabricated data, nonsensical advice).
 
 ## Input
 
