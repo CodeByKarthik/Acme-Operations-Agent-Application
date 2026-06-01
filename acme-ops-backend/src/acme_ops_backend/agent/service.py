@@ -38,6 +38,7 @@ class AgentResult:
     run_id: str = ""
     route: str = ""
     tools_called: list[str] = field(default_factory=list)  # type: ignore[misc]
+    skill_context: str = ""
 
 
 def _detect_rbac_denial(messages: list[Any]) -> bool:
@@ -176,6 +177,7 @@ class AgentService:
                     "messages": initial_messages,
                     "route": "",
                     "tool_call_count": 0,
+                    "skill_context": "",
                 },
                 config=config,
             )
@@ -219,4 +221,5 @@ class AgentService:
                 run_id=run_id,
                 route=route,
                 tools_called=tool_names,
+                skill_context=result.get("skill_context", ""),
             )

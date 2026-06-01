@@ -223,6 +223,7 @@ async def score_response(
     messages: list[AnyMessage],
     user_role: str = "unknown",
     expected_tools: list[str] | None = None,
+    skill_context: str = "",
 ) -> EvaluationScores:
     """
     Run the full evaluation pipeline on an agent response.
@@ -236,7 +237,8 @@ async def score_response(
     block the user response.
     """
     user_question = _extract_user_question(messages)
-    tool_data = _extract_tool_data(messages)
+    # Prefer skill_context (MCP data from skill routes) over ToolMessages
+    tool_data = skill_context if skill_context else _extract_tool_data(messages)
     final_answer = _extract_final_answer(messages)
     tools_called = _extract_tool_names(messages)
 

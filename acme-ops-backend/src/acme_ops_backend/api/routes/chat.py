@@ -42,6 +42,7 @@ async def chat(
         messages=result.messages,
         run_id=result.run_id,
         user_role=auth_context.role.value,
+        skill_context=result.skill_context,
     )
 
     return ChatResponse(
