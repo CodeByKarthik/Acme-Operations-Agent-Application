@@ -1,7 +1,7 @@
 [project]
 name = "acme-ops-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "Acme Operations MCP Service"
 readme = "README.md"
 authors = [
     { name = "CodeByKarthik", email = "karthinottsuk@gmail.com" }
