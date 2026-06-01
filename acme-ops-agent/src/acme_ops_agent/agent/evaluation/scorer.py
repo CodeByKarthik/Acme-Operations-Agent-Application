@@ -244,7 +244,7 @@ async def score_response(
 
     # --- LLM-judged scores ---
     try:
-        if tool_data != "No tool data available." and final_answer:
+        if final_answer:
             llm_scores = await _run_llm_judge(
                 llm, user_question, tool_data, final_answer
             )
@@ -258,7 +258,7 @@ async def score_response(
                 "hallucination": llm_scores.get("hallucination_reason", ""),
             }
         else:
-            logger.info("Skipping LLM judge — no tool data or no answer")
+            logger.info("Skipping LLM judge — no final answer found")
 
     except Exception:
         logger.exception("LLM judge evaluation failed")

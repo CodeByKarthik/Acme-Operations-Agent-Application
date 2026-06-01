@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
 from langchain_openai import ChatOpenAI
 
@@ -37,7 +37,18 @@ def create_escalation_summary_node(
         last_message = state["messages"][-1]
         user_text = content_to_text(getattr(last_message, "content"))  # type: ignore[arg-type]
 
-        summary = await skill.execute(user_text)
-        return {"messages": [AIMessage(content=summary)]}
+        result = await skill.execute(user_text)
+
+        messages: list[Any] = []
+        if result.raw_data: # type: ignore
+            messages.append(
+                ToolMessage(
+                    content=result.raw_data, # type: ignore
+                    tool_call_id="skill_context",
+                    name="escalation_summary",
+                )
+            )
+        messages.append(AIMessage(content=result.answer)) # type: ignore
+        return {"messages": messages}
 
     return escalation_summary_node
