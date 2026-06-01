@@ -25,6 +25,7 @@ from .nodes import (
     create_tool_node,
 )
 from .shared.state import AgentState
+from .shared.llm_factory import create_llm
 
 logger = get_logger(__name__)
 
@@ -45,11 +46,7 @@ def build_graph(
     """
 
     # --- Shared LLM ---
-    llm = ChatOpenAI(
-        model=settings.llm_model,
-        temperature=0,
-        api_key=SecretStr(settings.openai_api_key) if settings.openai_api_key else None,
-    )
+    llm = create_llm()
     llm_with_tools: Any = llm.bind_tools(tools)  # type: ignore[reportUnknownMemberType]
     tool_executor = ToolNode(tools)
 
