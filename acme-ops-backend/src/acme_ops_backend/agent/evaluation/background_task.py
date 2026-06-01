@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from acme_ops_backend.agent.shared.llm_factory import create_llm
 from acme_ops_backend.config import settings
 from acme_ops_shared.utils.logger import get_logger
 from langchain_core.messages import AnyMessage
@@ -35,13 +36,7 @@ async def run_background_evaluation(
     ground truth for evaluation instead of ToolMessages.
     """
     try:
-        llm = ChatOpenAI(
-            model=settings.llm_model,
-            temperature=0,
-            api_key=(
-                SecretStr(settings.openai_api_key) if settings.openai_api_key else None
-            ),
-        )
+        llm = create_llm()
 
         scores = await score_response(
             llm=llm,
