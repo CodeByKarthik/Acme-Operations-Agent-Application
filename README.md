@@ -7,15 +7,7 @@ Acme Operations Agent Application is an enterprise AI assistant for sales, suppo
 
 - Clone the repository
 
-    ```bash
-
-    ```
-
 - Update the `.env variables` by replace the .env.example (see attached notion pdf).
-
-    ```bash
-
-    ```
 
 - Run the Docker Compose Stack
 
@@ -124,17 +116,23 @@ Add an internal update to ISSUE-401 saying engineering escalation has been opene
 
 ---
 
+## Delivery Approach (Kanban Workflow)
+
+The first step was to review the brief, understand the requirements and identify the mandatory capabilities. After identifying the required capabilities, the work was broken down into smaller tasks and sequenced based on dependency order. 
+
+A Kanban board was used to track progress across the project to track what had been implemented, what was blocked, and what still needed to be completed. 
+
+Project board: https://github.com/users/CodeByKarthik/projects/1/views/3
+
+
+
 ## Additional Resources
 
 For more detailed information about the Acme Operations Agent Application, please refer to the project README files and the Nextra documentation. These resources cover the following topics:
 
-- System Architecture Overview
-- AI Agent Architecture Overview
-- ER Diagram and Database Schema
-- Technology Stack
-- Evaluation Summary
-- Trade-offs and Design Decisions
-- Future Improvements
-- AI Usage During Development
-
-The complete documentation is available in the Nextra site: 
+- System Architecture Overview :
+- Request Lifecycle (Userflow) : 
+- AI Agent Architecture Overview : 
+- Evaluation Summary : 
+- Trade-offs and Future Improvements :
+- AI Usage During Development :
