@@ -20,7 +20,8 @@ The purpose of this view is to show:
 
 ## Request Lifecycle Diagram
 
-![Request Lifecycle Diagram](./docs/diagrams/request-lifecycle.png)
+<img width="868" height="770" alt="request-lifecycle" src="https://github.com/user-attachments/assets/88738e85-9888-473b-b504-3810a1105d3b" />
+
 
 
 The request lifecycle diagram shows the runtime interaction between the following components:
