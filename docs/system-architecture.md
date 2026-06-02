@@ -19,7 +19,8 @@ The application follows a five-layer architecture:
 This extends a traditional web application architecture by adding an intelligence layer for agent reasoning and a tool layer for controlled business operation execution and separation of concern.
 
 
-![Five Layer Architecture Diagram](./docs/diagrams/five-layer-architecture.png)
+<img width="685" height="496" alt="five-layer-architecture" src="https://github.com/user-attachments/assets/ad0119da-ab3d-4e2a-a33c-47b2b2d0a57a" />
+
 
 
 ### 1. Presentation Layer
