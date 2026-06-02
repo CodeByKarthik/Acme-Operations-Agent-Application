@@ -66,7 +66,7 @@ Add an internal update to ISSUE-101 saying the customer requested a status updat
 
 **Expected behavior:** The first three prompts should work because sales_user has read-only access. The last prompt should be denied because sales_user cannot update issue status.
 
-
+---
 
 #### Support User Example
 
@@ -90,7 +90,7 @@ Create a next action for ISSUE-101 to schedule an executive follow-up meeting to
 
 **Expected behavior:** The first three prompts should work because support_user can read data and update issue status and add issue updates. The last prompt should be denied because support_user cannot manage next actions.
 
-
+---
 
 #### Admin User Example
 
