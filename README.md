@@ -25,6 +25,7 @@ Acme Operations Agent Application is an enterprise AI assistant for sales, suppo
     7. Start the Streamlit frontend
 
 
+---
 ### Login the Acme Operations Agent Application
 
 Test users are pre-configured in Keycloak realm: 
@@ -130,9 +131,9 @@ Project board: https://github.com/users/CodeByKarthik/projects/1/views/3
 
 For more detailed information about the Acme Operations Agent Application, please refer to the project README files and the Nextra documentation. These resources cover the following topics:
 
-- System Architecture Overview :
-- Request Lifecycle (Userflow) : 
-- AI Agent Architecture Overview : 
-- Evaluation Summary : 
-- Trade-offs and Future Improvements :
-- AI Usage During Development :
+- System Architecture Overview : https://github.com/CodeByKarthik/Acme-Operations-Agent-Application/blob/main/docs/system-architecture.md
+- Request Lifecycle (Userflow) : https://github.com/CodeByKarthik/Acme-Operations-Agent-Application/blob/main/docs/request-lifecycle.md
+- AI Agent Architecture Overview : https://github.com/CodeByKarthik/Acme-Operations-Agent-Application/blob/main/docs/agent-architecture.md
+- Evaluation Summary : https://github.com/CodeByKarthik/Acme-Operations-Agent-Application/blob/main/docs/evaluation_report.md
+- Trade-offs and Future Improvements : https://github.com/CodeByKarthik/Acme-Operations-Agent-Application/blob/main/docs/trade-off-statement.md
+- AI Usage During Development : https://github.com/CodeByKarthik/Acme-Operations-Agent-Application/blob/main/docs/ai-usage.md
