@@ -15,7 +15,7 @@ A custom StateGraph gives explicit control over every edge and condition.
 
 ## Agent workflow diagram
 
-![Agent Workflow](./docs/diagrams/agent-workflow.png)
+![Agent Workflow](docs/diagrams/agent-workflow.png)
 
 The diagram shows the runtime flow of a user request through the custom LangGraph agent. Every request starts with the input guardrail, where unsafe or policy-violating prompts are blocked before they can reach the reasoning layer.
 
