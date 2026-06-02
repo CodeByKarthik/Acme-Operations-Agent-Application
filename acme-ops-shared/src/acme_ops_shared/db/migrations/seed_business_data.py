@@ -2,6 +2,9 @@ from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from acme_ops_shared.common.enums import (
     CustomerHealthEnum,
     CustomerTierEnum,
@@ -13,26 +16,17 @@ from acme_ops_shared.common.enums import (
 from acme_ops_shared.db.models.business import Customer, Issue, IssueUpdate, NextAction
 from acme_ops_shared.db.models.user import AppUser
 from acme_ops_shared.db.session import SessionLocal
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 
 def get_user_by_username(session: Session, username: str) -> AppUser:
-    """
-    Helper function to retrieve a user by username. Raises an
-    exception if the user is not found.
-
-    Attributes:
-    -----------
-    - session: SQLAlchemy Session object for database access.
-    - username: The username of the user to retrieve.
-    """
     user = session.scalar(select(AppUser).where(AppUser.username == username))
+
     if user is None:
         raise RuntimeError(
             f"Required seed user '{username}' not found. "
-            "Run seed_users before seed_business_data."
+            "Run seed_user_data before seed_business_data."
         )
+
     return user
 
 
@@ -47,22 +41,8 @@ def get_or_create_customer(
     contract_value: Decimal,
     notes: str,
 ) -> Customer:
-    """
-    Retrieves an existing customer by name or creates a new
-    one if it doesn't exist.
-
-    Attributes:
-    - session: SQLAlchemy Session object for database access.
-    - name: Name of the customer (must be unique).
-    - industry: Industry vertical of the customer.
-    - tier: Customer tier (e.g., enterprise, mid-market).
-    - health_status: Current health status of the customer.
-    - account_owner_user_id: User ID of the account
-      owner (sales representative).
-    - contract_value: Total contract value for the customer.
-    - notes: Additional notes about the customer.
-    """
     existing = session.scalar(select(Customer).where(Customer.name == name))
+
     if existing is not None:
         return existing
 
@@ -75,8 +55,10 @@ def get_or_create_customer(
         contract_value=contract_value,
         notes=notes,
     )
+
     session.add(customer)
     session.flush()
+
     return customer
 
 
@@ -94,28 +76,8 @@ def get_or_create_issue(
     opened_at: datetime,
     due_at: datetime | None,
 ) -> Issue:
-    """
-    Retrieves an existing issue by external reference or creates a new
-    one if it doesn't exist.
-
-    Attributes:
-    -----------
-    - session: SQLAlchemy Session object for database access.
-    - external_ref: Unique external reference for the
-      issue (e.g., from a support system).
-    - customer_id: ID of the associated customer.
-    - title: Short title describing the issue.
-    - description: Detailed description of the issue.
-    - status: Current status of the issue (e.g., open, in progress).
-    - priority: Priority level of the issue (e.g., P1, P2).
-    - assigned_to_user_id: User ID of the support agent
-      assigned to the issue.
-    - source_system: Name of the external system where
-      the issue originated.
-    - opened_at: Timestamp when the issue was opened.
-    - due_at: Timestamp when the issue is due to be resolved.
-    """
     existing = session.scalar(select(Issue).where(Issue.external_ref == external_ref))
+
     if existing is not None:
         return existing
 
@@ -131,8 +93,10 @@ def get_or_create_issue(
         opened_at=opened_at,
         due_at=due_at,
     )
+
     session.add(issue)
     session.flush()
+
     return issue
 
 
@@ -147,29 +111,13 @@ def add_issue_update_if_missing(
     is_customer_visible: bool,
     created_at: datetime,
 ) -> None:
-    """
-    Adds an issue update if an identical update does not
-    already exist for the issue.
-
-    Attributes:
-    -----------
-    - session: SQLAlchemy Session object for database access.
-    - issue_id: ID of the issue to which the update belongs.
-    - author_user_id: User ID of the update author
-      (can be null for system updates).
-    - author_name: Name of the update author (for display purposes).
-    - author_role: Role of the update author (e.g., support_user, admin).
-    - update_text: Text content of the issue update.
-    - is_customer_visible: Whether this update should be
-      visible to the customer.
-    - created_at: Timestamp when the update was created.
-    """
     existing = session.scalar(
         select(IssueUpdate).where(
             IssueUpdate.issue_id == issue_id,
             IssueUpdate.update_text == update_text,
         )
     )
+
     if existing is not None:
         return
 
@@ -198,30 +146,13 @@ def add_next_action_if_missing(
     created_by_user_id: UUID | None,
     created_by_role: str,
 ) -> None:
-    """
-    Adds a next action to an issue if an identical action does not
-    already exist for the issue.
-
-    Attributes:
-    -----------
-    - session: SQLAlchemy Session object for database access.
-    - issue_id: ID of the issue to which the next action belongs.
-    - action_type: Type of the next action (e.g.,
-      technical investigation, customer update).
-    - action_text: Text describing the next action to be taken.
-    - owner_user_id: User ID of the person responsible for the next action.
-    - due_at: Timestamp when the next action is due.
-    - status: Current status of the next action (e.g., open, completed).
-    - created_by_user_id: User ID of the person who created the next action.
-    - created_by_role: Role of the person who created the
-      next action (e.g., support_user, admin).
-    """
     existing = session.scalar(
         select(NextAction).where(
             NextAction.issue_id == issue_id,
             NextAction.action_text == action_text,
         )
     )
+
     if existing is not None:
         return
 
@@ -240,11 +171,6 @@ def add_next_action_if_missing(
 
 
 def seed_business_data() -> None:
-    """
-    Seeds the database with sample business data
-    including customers, issues, issue updates
-    and next actions.
-    """
     now = datetime.now(UTC)
 
     with SessionLocal() as session:
@@ -260,7 +186,10 @@ def seed_business_data() -> None:
             health_status=CustomerHealthEnum.AT_RISK,
             account_owner_user_id=sales_user.id,
             contract_value=Decimal("250000.00"),
-            notes="Strategic enterprise customer. Executive team is sensitive to support delays.",
+            notes=(
+                "Strategic enterprise customer. Executive team is sensitive "
+                "to support delays."
+            ),
         )
 
         initech = get_or_create_customer(
@@ -282,7 +211,66 @@ def seed_business_data() -> None:
             health_status=CustomerHealthEnum.WATCH,
             account_owner_user_id=sales_user.id,
             contract_value=Decimal("175000.00"),
-            notes="Expansion opportunity, but recent integration issues need close monitoring.",
+            notes=(
+                "Expansion opportunity, but recent integration issues need "
+                "close monitoring."
+            ),
+        )
+
+        stark = get_or_create_customer(
+            session,
+            name="Stark Industries",
+            industry="Manufacturing",
+            tier=CustomerTierEnum.ENTERPRISE,
+            health_status=CustomerHealthEnum.CRITICAL,
+            account_owner_user_id=sales_user.id,
+            contract_value=Decimal("420000.00"),
+            notes=(
+                "High-value enterprise customer. Current outage is affecting "
+                "executive dashboards and renewal confidence."
+            ),
+        )
+
+        wayne = get_or_create_customer(
+            session,
+            name="Wayne Enterprises",
+            industry="Logistics",
+            tier=CustomerTierEnum.ENTERPRISE,
+            health_status=CustomerHealthEnum.HEALTHY,
+            account_owner_user_id=sales_user.id,
+            contract_value=Decimal("310000.00"),
+            notes=(
+                "Stable enterprise customer with strong adoption and no major "
+                "active escalations."
+            ),
+        )
+
+        wonka = get_or_create_customer(
+            session,
+            name="Wonka Foods",
+            industry="Food Manufacturing",
+            tier=CustomerTierEnum.SMB,
+            health_status=CustomerHealthEnum.WATCH,
+            account_owner_user_id=sales_user.id,
+            contract_value=Decimal("32000.00"),
+            notes=(
+                "Smaller account with intermittent operational issues and "
+                "limited technical capacity."
+            ),
+        )
+
+        cyberdyne = get_or_create_customer(
+            session,
+            name="Cyberdyne Systems",
+            industry="Industrial Automation",
+            tier=CustomerTierEnum.MID_MARKET,
+            health_status=CustomerHealthEnum.AT_RISK,
+            account_owner_user_id=sales_user.id,
+            contract_value=Decimal("125000.00"),
+            notes=(
+                "Account is at risk due to repeated integration incidents and "
+                "slow resolution cycles."
+            ),
         )
 
         issue_101 = get_or_create_issue(
@@ -353,15 +341,117 @@ def seed_business_data() -> None:
             due_at=now + timedelta(days=2),
         )
 
+        issue_401 = get_or_create_issue(
+            session,
+            external_ref="ISSUE-401",
+            customer_id=stark.id,
+            title="Executive analytics dashboard unavailable",
+            description=(
+                "Executive analytics dashboard returns 503 errors for all "
+                "Stark Industries admin users."
+            ),
+            status=IssueStatusEnum.OPEN,
+            priority=IssuePriorityEnum.P1,
+            assigned_to_user_id=support_user.id,
+            source_system="acme-support",
+            opened_at=now - timedelta(hours=10),
+            due_at=now + timedelta(hours=6),
+        )
+
+        issue_402 = get_or_create_issue(
+            session,
+            external_ref="ISSUE-402",
+            customer_id=stark.id,
+            title="Webhook delivery failures to manufacturing systems",
+            description=(
+                "Webhook events are failing intermittently, delaying downstream "
+                "manufacturing workflow updates."
+            ),
+            status=IssueStatusEnum.IN_PROGRESS,
+            priority=IssuePriorityEnum.P2,
+            assigned_to_user_id=support_user.id,
+            source_system="acme-support",
+            opened_at=now - timedelta(days=3),
+            due_at=now + timedelta(days=1),
+        )
+
+        issue_501 = get_or_create_issue(
+            session,
+            external_ref="ISSUE-501",
+            customer_id=wayne.id,
+            title="Archived shipment reports missing from export UI",
+            description=(
+                "Older shipment reports are not visible in the export UI, but "
+                "API access still works."
+            ),
+            status=IssueStatusEnum.RESOLVED,
+            priority=IssuePriorityEnum.P4,
+            assigned_to_user_id=support_user.id,
+            source_system="acme-support",
+            opened_at=now - timedelta(days=12),
+            due_at=now - timedelta(days=7),
+        )
+
+        issue_601 = get_or_create_issue(
+            session,
+            external_ref="ISSUE-601",
+            customer_id=wonka.id,
+            title="Order notification emails delayed",
+            description=(
+                "Order notification emails are delayed by up to forty minutes "
+                "during evening processing windows."
+            ),
+            status=IssueStatusEnum.OPEN,
+            priority=IssuePriorityEnum.P3,
+            assigned_to_user_id=support_user.id,
+            source_system="acme-support",
+            opened_at=now - timedelta(days=2),
+            due_at=now + timedelta(days=5),
+        )
+
+        issue_701 = get_or_create_issue(
+            session,
+            external_ref="ISSUE-701",
+            customer_id=cyberdyne.id,
+            title="Device telemetry ingestion backlog",
+            description=(
+                "Telemetry ingestion is falling behind during peak batch upload "
+                "windows, causing delayed operational alerts."
+            ),
+            status=IssueStatusEnum.BLOCKED,
+            priority=IssuePriorityEnum.P1,
+            assigned_to_user_id=support_user.id,
+            source_system="acme-support",
+            opened_at=now - timedelta(days=6),
+            due_at=now - timedelta(hours=4),
+        )
+
+        issue_702 = get_or_create_issue(
+            session,
+            external_ref="ISSUE-702",
+            customer_id=cyberdyne.id,
+            title="Duplicate alerts generated for resolved incidents",
+            description=(
+                "Resolved incidents sometimes generate duplicate alerts after "
+                "device reconnect events."
+            ),
+            status=IssueStatusEnum.OPEN,
+            priority=IssuePriorityEnum.P3,
+            assigned_to_user_id=support_user.id,
+            source_system="acme-support",
+            opened_at=now - timedelta(days=1),
+            due_at=now + timedelta(days=4),
+        )
+
         add_issue_update_if_missing(
             session,
             issue_id=issue_101.id,
             author_user_id=support_user.id,
-            author_name="Support User",
+            author_name="Sam Support",
             author_role="support_user",
             update_text=(
-                "Confirmed export job timeout in production logs. "
-                "Customer is blocked on month-end finance reporting."
+                "Confirmed export job timeout in production logs. Customer is "
+                "blocked on month-end finance reporting."
             ),
             is_customer_visible=True,
             created_at=now - timedelta(days=2, hours=-2),
@@ -371,7 +461,7 @@ def seed_business_data() -> None:
             session,
             issue_id=issue_101.id,
             author_user_id=support_user.id,
-            author_name="Support User",
+            author_name="Sam Support",
             author_role="support_user",
             update_text=(
                 "Temporary workaround identified, but customer has not confirmed "
@@ -385,7 +475,7 @@ def seed_business_data() -> None:
             session,
             issue_id=issue_101.id,
             author_user_id=admin_user.id,
-            author_name="Admin User",
+            author_name="Anita Admin",
             author_role="admin",
             update_text=(
                 "Executive update requested because this is a P1 issue on an "
@@ -399,7 +489,7 @@ def seed_business_data() -> None:
             session,
             issue_id=issue_102.id,
             author_user_id=support_user.id,
-            author_name="Support User",
+            author_name="Sam Support",
             author_role="support_user",
             update_text=(
                 "Initial investigation points to a SAML certificate mismatch. "
@@ -413,7 +503,7 @@ def seed_business_data() -> None:
             session,
             issue_id=issue_201.id,
             author_user_id=support_user.id,
-            author_name="Support User",
+            author_name="Sam Support",
             author_role="support_user",
             update_text=(
                 "Reproduced dashboard slowdown using a nine-month date range. "
@@ -427,13 +517,138 @@ def seed_business_data() -> None:
             session,
             issue_id=issue_301.id,
             author_user_id=support_user.id,
-            author_name="Support User",
+            author_name="Sam Support",
             author_role="support_user",
-            update_text=(
-                "Issue is blocked pending store connector logs from the customer."
-            ),
+            update_text="Issue is blocked pending store connector logs from the customer.",
             is_customer_visible=True,
             created_at=now - timedelta(days=3),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_401.id,
+            author_user_id=support_user.id,
+            author_name="Sam Support",
+            author_role="support_user",
+            update_text=(
+                "Confirmed dashboard API is returning 503 errors across all "
+                "Stark admin workspaces."
+            ),
+            is_customer_visible=True,
+            created_at=now - timedelta(hours=8),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_401.id,
+            author_user_id=admin_user.id,
+            author_name="Anita Admin",
+            author_role="admin",
+            update_text=(
+                "Incident review opened. Engineering escalation required because "
+                "customer executives are directly impacted."
+            ),
+            is_customer_visible=False,
+            created_at=now - timedelta(hours=6),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_402.id,
+            author_user_id=support_user.id,
+            author_name="Sam Support",
+            author_role="support_user",
+            update_text=(
+                "Webhook retry logs show elevated 429 responses from the customer "
+                "endpoint during batch windows."
+            ),
+            is_customer_visible=True,
+            created_at=now - timedelta(days=2),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_501.id,
+            author_user_id=support_user.id,
+            author_name="Sam Support",
+            author_role="support_user",
+            update_text=(
+                "Report index was rebuilt and archived shipment exports are now "
+                "visible in the UI."
+            ),
+            is_customer_visible=True,
+            created_at=now - timedelta(days=8),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_601.id,
+            author_user_id=support_user.id,
+            author_name="Sam Support",
+            author_role="support_user",
+            update_text=(
+                "Email queue delay appears correlated with evening batch order "
+                "processing volume."
+            ),
+            is_customer_visible=True,
+            created_at=now - timedelta(days=1, hours=8),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_701.id,
+            author_user_id=support_user.id,
+            author_name="Sam Support",
+            author_role="support_user",
+            update_text=(
+                "Telemetry backlog exceeded alert threshold. Customer needs to "
+                "provide latest device batch logs before ingestion tuning can continue."
+            ),
+            is_customer_visible=True,
+            created_at=now - timedelta(days=5),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_701.id,
+            author_user_id=admin_user.id,
+            author_name="Anita Admin",
+            author_role="admin",
+            update_text=(
+                "SLA risk flagged because the issue is past due and affects "
+                "operational alerting."
+            ),
+            is_customer_visible=False,
+            created_at=now - timedelta(hours=10),
+        )
+
+        add_issue_update_if_missing(
+            session,
+            issue_id=issue_702.id,
+            author_user_id=support_user.id,
+            author_name="Sam Support",
+            author_role="support_user",
+            update_text=(
+                "Duplicate alerts reproduced after forced reconnect. Need event "
+                "deduplication review."
+            ),
+            is_customer_visible=True,
+            created_at=now - timedelta(hours=18),
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_101.id,
+            action_type=NextActionTypeEnum.CUSTOMER_UPDATE,
+            action_text=(
+                "Send Globex a concise status update covering impact, workaround "
+                "status, and next engineering step."
+            ),
+            owner_user_id=support_user.id,
+            due_at=now + timedelta(hours=8),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=admin_user.id,
+            created_by_role="admin",
         )
 
         add_next_action_if_missing(
@@ -453,17 +668,137 @@ def seed_business_data() -> None:
 
         add_next_action_if_missing(
             session,
-            issue_id=issue_101.id,
+            issue_id=issue_301.id,
             action_type=NextActionTypeEnum.CUSTOMER_UPDATE,
             action_text=(
-                "Send Globex a concise status update covering impact, workaround "
-                "status, and next engineering step."
+                "Request regional store connector logs from Umbrella Retail "
+                "operations team."
             ),
             owner_user_id=support_user.id,
-            due_at=now + timedelta(hours=8),
+            due_at=now + timedelta(hours=12),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=support_user.id,
+            created_by_role="support_user",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_401.id,
+            action_type=NextActionTypeEnum.ENGINEERING_ESCALATION,
+            action_text=(
+                "Escalate dashboard 503 errors to engineering incident owner "
+                "and request mitigation plan within four hours."
+            ),
+            owner_user_id=admin_user.id,
+            due_at=now + timedelta(hours=4),
             status=NextActionStatusEnum.OPEN,
             created_by_user_id=admin_user.id,
             created_by_role="admin",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_401.id,
+            action_type=NextActionTypeEnum.ACCOUNT_ESCALATION,
+            action_text=(
+                "Prepare executive-facing incident update for Stark Industries "
+                "account sponsor."
+            ),
+            owner_user_id=sales_user.id,
+            due_at=now + timedelta(hours=3),
+            status=NextActionStatusEnum.IN_PROGRESS,
+            created_by_user_id=admin_user.id,
+            created_by_role="admin",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_402.id,
+            action_type=NextActionTypeEnum.TECHNICAL_INVESTIGATION,
+            action_text=(
+                "Compare webhook retry volume with customer endpoint rate limits "
+                "and recommend retry policy adjustment."
+            ),
+            owner_user_id=support_user.id,
+            due_at=now + timedelta(days=1),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=support_user.id,
+            created_by_role="support_user",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_501.id,
+            action_type=NextActionTypeEnum.CUSTOMER_UPDATE,
+            action_text=(
+                "Confirm with Wayne Enterprises that archived shipment exports "
+                "are visible and close the customer loop."
+            ),
+            owner_user_id=support_user.id,
+            due_at=now - timedelta(days=6),
+            status=NextActionStatusEnum.COMPLETED,
+            created_by_user_id=support_user.id,
+            created_by_role="support_user",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_601.id,
+            action_type=NextActionTypeEnum.TECHNICAL_INVESTIGATION,
+            action_text=(
+                "Inspect email queue metrics during evening processing and "
+                "identify whether worker scaling is required."
+            ),
+            owner_user_id=support_user.id,
+            due_at=now + timedelta(days=2),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=support_user.id,
+            created_by_role="support_user",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_701.id,
+            action_type=NextActionTypeEnum.SLA_REVIEW,
+            action_text=(
+                "Review SLA exposure for Cyberdyne because telemetry ingestion "
+                "is past due and blocked on customer logs."
+            ),
+            owner_user_id=admin_user.id,
+            due_at=now + timedelta(hours=2),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=admin_user.id,
+            created_by_role="admin",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_701.id,
+            action_type=NextActionTypeEnum.CUSTOMER_UPDATE,
+            action_text=(
+                "Ask Cyberdyne for latest device batch logs and confirm expected "
+                "delivery time."
+            ),
+            owner_user_id=support_user.id,
+            due_at=now + timedelta(hours=6),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=support_user.id,
+            created_by_role="support_user",
+        )
+
+        add_next_action_if_missing(
+            session,
+            issue_id=issue_702.id,
+            action_type=NextActionTypeEnum.TECHNICAL_INVESTIGATION,
+            action_text=(
+                "Review duplicate alert generation after device reconnect and "
+                "propose deduplication fix."
+            ),
+            owner_user_id=support_user.id,
+            due_at=now + timedelta(days=3),
+            status=NextActionStatusEnum.OPEN,
+            created_by_user_id=support_user.id,
+            created_by_role="support_user",
         )
 
         session.commit()
